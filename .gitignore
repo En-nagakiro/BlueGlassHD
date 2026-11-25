@@ -1,0 +1,52 @@
+# ==============================================================================
+# BYOA (Bring Your Own Assets) Open-Source Compliance .gitignore
+# Strictly excludes ALL TYPE-MOON original & locally-derived user assets!
+# ==============================================================================
+
+# 1. User-imported original game images, audio & transpiled story scripts
+Tsukihime_HD/game/images/
+Tsukihime_HD/game/story/
+Tsukihime_HD/game/core/story_variables.rpy
+Tsukihime_HD/game/core/image_definitions.rpy
+Tsukihime_HD/game/core/byoa_meta.rpy
+Tsukihime_HD/game/audio/0*.wav
+Tsukihime_HD/game/audio/0*.flac
+Tsukihime_HD/game/audio/0*.ogg
+Tsukihime_HD/game/audio/0*.mp3
+Tsukihime_HD/game/audio/1*.wav
+Tsukihime_HD/game/audio/1*.flac
+Tsukihime_HD/game/audio/1*.ogg
+Tsukihime_HD/game/audio/1*.mp3
+Tsukihime_HD/game/audio/se_*
+
+# 2. Locally generated derivative GUI art (derived from user's title1.jpg & tachi)
+Tsukihime_HD/game/gui/portraits/
+Tsukihime_HD/game/gui/main_menu.webp
+Tsukihime_HD/game/gui/title_eclipse_moon.png
+Tsukihime_HD/game/gui/title_eclipse_kanji.png
+
+# 3. Ren'Py runtime caches, compiled bytecode, logs & player saves
+Tsukihime_HD/game/cache/
+Tsukihime_HD/game/saves/
+Tsukihime_HD/log.txt
+Tsukihime_HD/errors.txt
+Tsukihime_HD/traceback.txt
+*.rpyc
+*.rpyb
+*.rpymc
+_smoke_test.*
+
+# 4. External third-party SDK, upscaler & compiled release executables (distribute via GitHub Releases)
+tools/
+dist/
+release/
+build_pyinstaller/
+*.exe
+*.exe.sha256
+*.spec
+
+# 5. Python & OS temporary artifacts
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

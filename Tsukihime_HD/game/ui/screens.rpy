@@ -424,7 +424,6 @@ screen main_menu():
         $ newest = renpy.newest_slot()
         $ tsuki_unlocked = is_tsukishoku_unlocked()
         $ cleared_cnt = get_cleared_endings_count()
-        $ _mm_bgm = tsuki_bgm_path("08")
 
         if tsuki_unlocked and renpy.loadable("gui/title_eclipse_moon.png") and renpy.loadable("gui/title_eclipse_kanji.png"):
             # Post-5-Route Clear (Eclipse / 月蝕): Rich Saturated Cobalt-Violet Sky + Live Seamless Parallax Clouds
@@ -461,9 +460,6 @@ screen main_menu():
             add "gui/title_eclipse_left_veil.png" xpos 0 ypos 0
         else:
             add "gui/main_menu.webp"
-
-        on "show" action If(_mm_bgm, Play("music", _mm_bgm, if_changed=True, fadein=1.5))
-        on "replace" action If(_mm_bgm, Play("music", _mm_bgm, if_changed=True, fadein=1.5))
 
         # Editorial Epigraph & Edition Header (Top-Left Spine X=136)
         vbox:

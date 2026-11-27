@@ -72,6 +72,95 @@ init -3 python:
 
     BYOA_SPLASH_QUOTE = ""
     BYOA_SPLASH_SUB = ""
+
+    OFFICIAL_GITHUB_URL = "https://github.com/En-nagakiro/BlueGlassHD"
+    OFFICIAL_RELEASES_URL = "https://github.com/En-nagakiro/BlueGlassHD/releases"
+    OFFICIAL_BILIBILI_URL = "https://space.bilibili.com/1601243445"
+
+    # Manual-only update check state (NEVER sends background network requests automatically)
+    _update_check_state = {
+        "status": "idle",   # "idle" | "checking" | "latest" | "available" | "unavailable" | "error"
+        "latest": "",
+        "url": OFFICIAL_RELEASES_URL,
+    }
+
+    def _parse_semver_tuple(ver_str):
+        import re as _ure
+        nums = [int(x) for x in _ure.findall(r"\d+", str(ver_str))]
+        while len(nums) < 3:
+            nums.append(0)
+        return tuple(nums[:3])
+
+    def tsuki_trigger_manual_update_check():
+        """User-triggered manual update check against GitHub Releases in a daemon thread."""
+        if _update_check_state["status"] == "checking":
+            return
+        _update_check_state["status"] = "checking"
+        _update_check_state["latest"] = ""
+        _update_check_state["url"] = OFFICIAL_RELEASES_URL
+
+        import threading as _uth
+        import urllib.request as _ureq
+        import urllib.error as _uerr
+        import json as _ujson
+        import re as _ure
+
+        cur_ver = str(config.version)
+
+        def _worker():
+            latest_tag = None
+            target_url = OFFICIAL_RELEASES_URL
+            try:
+                req = _ureq.Request(
+                    OFFICIAL_RELEASES_URL + "/latest",
+                    headers={"User-Agent": f"BlueGlassHD/{cur_ver}"},
+                )
+                with _ureq.urlopen(req, timeout=5) as resp:
+                    final_url = resp.geturl()
+                    m = _ure.search(r"/releases/tag/([^/?#]+)", final_url)
+                    if m:
+                        latest_tag = m.group(1)
+                        target_url = final_url
+            except _uerr.HTTPError as he:
+                if he.code == 404:
+                    _update_check_state["status"] = "unavailable"
+                    return
+            except Exception:
+                pass
+
+            if not latest_tag:
+                try:
+                    req2 = _ureq.Request(
+                        "https://api.github.com/repos/En-nagakiro/BlueGlassHD/releases/latest",
+                        headers={
+                            "User-Agent": f"BlueGlassHD/{cur_ver}",
+                            "Accept": "application/vnd.github+json",
+                        },
+                    )
+                    with _ureq.urlopen(req2, timeout=5) as resp2:
+                        data = _ujson.loads(resp2.read().decode("utf-8", errors="replace"))
+                        latest_tag = (data.get("tag_name") or "").strip()
+                        target_url = data.get("html_url") or OFFICIAL_RELEASES_URL
+                except _uerr.HTTPError as he2:
+                    if he2.code == 404:
+                        _update_check_state["status"] = "unavailable"
+                        return
+                except Exception:
+                    _update_check_state["status"] = "error"
+                    return
+
+            if not latest_tag:
+                _update_check_state["status"] = "unavailable"
+            elif _parse_semver_tuple(latest_tag) > _parse_semver_tuple(cur_ver):
+                _update_check_state["latest"] = latest_tag
+                _update_check_state["url"] = target_url
+                _update_check_state["status"] = "available"
+            else:
+                _update_check_state["latest"] = latest_tag
+                _update_check_state["url"] = target_url
+                _update_check_state["status"] = "latest"
+
+        _uth.Thread(target=_worker, daemon=True).start()
     # 100% Open-Source (SIL OFL 1.1) Story Typography; FontGroup ensures zero tofu on U+78A6 (碦)
     _KAI_FONT_GROUP = FontGroup().add("fonts/notoserif_sc.otf", 0x78A6, 0x78A6).add("fonts/lxgw_wenkai.ttf", 0x0000, 0x10FFFF)
 
@@ -202,6 +291,14 @@ init -3 python:
         p = tsuki_se_path(se_stem)
         if p:
             renpy.music.play(p, channel="ambient", loop=True, fadein=fadein, if_changed=True)
+
+    def tsuki_stop_wave(fadeout=0.5):
+        """Stop SE/ambient channels and any looping se_* track started on music channel via mp3loop."""
+        renpy.music.stop(channel="sound", fadeout=0.0)
+        renpy.music.stop(channel="ambient", fadeout=fadeout)
+        cur = renpy.music.get_playing("music")
+        if cur and cur.startswith("audio/se_"):
+            renpy.music.stop(channel="music", fadeout=fadeout)
 
     def get_byoa_status():
         """Return live availability dict for user-imported BYOA asset categories."""

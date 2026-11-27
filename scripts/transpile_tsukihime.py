@@ -854,8 +854,7 @@ class TsukihimeASTTranspiler:
 
             if sline == "wavestop":
                 flush_chunk(clear_after=False)
-                out.append("    stop sound\n")
-                out.append("    stop ambient fadeout 0.5\n")
+                out.append("    $ tsuki_stop_wave()\n")
                 continue
 
             # Pauses & Delays (properly resolves %staffrollwait = 4000ms!)

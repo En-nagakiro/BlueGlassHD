@@ -133,6 +133,9 @@ def main():
         "3. 点击「浏览...」选中原版目录，确认检测通过后点击右下角「开始导入」（极速模式约 10 秒）。\n"
         "4. 导入完成后点击「启动游戏」（或直接双击 BlueGlassHD.exe），默认全屏启动（F / Alt+Enter 可切换窗口）。\n"
         "5. 游戏界面与导入器均支持中文 / English 实时切换。\n\n"
+        "官方发布与反馈（永久免费开源，谨防付费倒卖与过期搬运）：\n"
+        "- GitHub 仓库：https://github.com/En-nagakiro/BlueGlassHD\n"
+        "- 作者 B 站主页：https://space.bilibili.com/1601243445\n\n"
         "--------------------------------------------------------\n"
         "Tsukihime Classic HD (Blue Glass Engine BYOA Release)\n"
         "--------------------------------------------------------\n\n"
@@ -143,6 +146,9 @@ def main():
         "3. Click 'Browse...' to select your Tsukihime folder, then click 'Start Import' (~10s in Fast Mode).\n"
         "4. Click 'Launch Game' (or run BlueGlassHD.exe). Launches fullscreen by default (F / Alt+Enter toggles).\n"
         "5. Both the importer and in-game UI support live Chinese / English switching.\n\n"
+        "Official Links (Free & open-source forever; beware of paid resellers):\n"
+        "- GitHub : https://github.com/En-nagakiro/BlueGlassHD\n"
+        "- Author : https://space.bilibili.com/1601243445\n\n"
         "Open-source licenses: LICENSE, THIRD_PARTY_LICENSES.md, and game/fonts/LICENSES.txt.\n"
     )
     with open(os.path.join(pkg_dir, "README_使用说明.txt"), "w", encoding="utf-8-sig", newline="\r\n") as gf:
@@ -151,10 +157,10 @@ def main():
     # Hard compliance assertion on final unzipped folder!
     verify_zero_copyright_leaks(pkg_dir)
 
-    # Repack clean flat BYOA distribution ZIP + SHA-256
+    # Repack clean flat BYOA distribution ZIP (max deflate level=9 to stay comfortably under 100 MB) + SHA-256
     final_zip = os.path.join(RELEASE_DIR, f"{pkg_name}-BYOA.zip")
     print(f"[3/3] Packing distributable archive: {final_zip} ...")
-    with zipfile.ZipFile(final_zip, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as zout:
+    with zipfile.ZipFile(final_zip, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zout:
         for r_dir, _, fnames in os.walk(pkg_dir):
             for fn in fnames:
                 full = os.path.join(r_dir, fn)

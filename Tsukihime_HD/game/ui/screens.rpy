@@ -462,8 +462,8 @@ screen main_menu():
         else:
             add "gui/main_menu.webp"
 
-        on "show" action If(_mm_bgm and not renpy.music.is_playing("music"), Play("music", _mm_bgm, fadein=1.5))
-        on "replace" action If(_mm_bgm and not renpy.music.is_playing("music"), Play("music", _mm_bgm, fadein=1.5))
+        on "show" action If(_mm_bgm, Play("music", _mm_bgm, if_changed=True, fadein=1.5))
+        on "replace" action If(_mm_bgm, Play("music", _mm_bgm, if_changed=True, fadein=1.5))
 
         # Editorial Epigraph & Edition Header (Top-Left Spine X=136)
         vbox:
@@ -646,13 +646,29 @@ screen main_menu():
                         if not is_ui_en():
                             text "「月蝕」" xpos 238 yalign 0.52 size 15 font "fonts/lxgw_xihei_screen.ttf" color "#cbb378" hover_color "#fae7b8"
 
-        text f"ENDINGS  {cleared_cnt} / 9   ·   CLASSIC HD v2.0":
+        hbox:
             xpos 136
             yalign 0.945
-            size 12
-            color ("#a8a0cf" if tsuki_unlocked else "#73879e")
-            font "fonts/lxgw_xihei.ttf"
-            kerning 1.5
+            spacing 14
+
+            $ _mm_ft_col = "#a8a0cf" if tsuki_unlocked else "#73879e"
+            text f"ENDINGS  {cleared_cnt} / 9   ·   v{config.version}" size 12 color _mm_ft_col font "fonts/lxgw_xihei.ttf" kerning 1.5 yalign 0.5
+            text "·" size 12 color _mm_ft_col font "fonts/lxgw_xihei.ttf" yalign 0.5
+            button:
+                action OpenURL(OFFICIAL_GITHUB_URL)
+                background None
+                hover_background None
+                padding (0, 0)
+                yalign 0.5
+                text "GitHub" size 12 color _mm_ft_col hover_color "#eef4fa" font "fonts/lxgw_xihei.ttf" kerning 1.0
+            text "·" size 12 color _mm_ft_col font "fonts/lxgw_xihei.ttf" yalign 0.5
+            button:
+                action OpenURL(OFFICIAL_BILIBILI_URL)
+                background None
+                hover_background None
+                padding (0, 0)
+                yalign 0.5
+                text "Bilibili" size 12 color _mm_ft_col hover_color "#eef4fa" font "fonts/lxgw_xihei.ttf" kerning 1.0
 
 
 ## ==============================================================================
@@ -674,7 +690,7 @@ screen navigation():
             spacing 6
 
             text "月 姫" size 36 color "#eef4fa" font "fonts/lxgw_xihei_screen.ttf"
-            text "CLASSIC HD" size 12 color "#7e92a8" font "fonts/lxgw_xihei.ttf" kerning 2.5
+            text f"CLASSIC HD  ·  v{config.version}" size 12 color "#7e92a8" font "fonts/lxgw_xihei.ttf" kerning 2.0
 
         vbox:
             xpos 20
@@ -1627,6 +1643,14 @@ screen help():
 
 screen about():
     tag menu
+
+    if _update_check_state["status"] == "checking":
+        timer 0.25 repeat True action Function(renpy.restart_interaction)
+
+    $ _upd_st = _update_check_state["status"]
+    $ _upd_ver = _update_check_state["latest"]
+    $ _upd_url = _update_check_state["url"]
+
     use game_menu(ui_tr("关于本作", "About"), scroll="viewport", subtitle=ui_tr("版本与开源许可", "Version & open-source licenses")):
         frame:
             xsize 1420
@@ -1664,6 +1688,63 @@ screen about():
                                 spacing 36
                                 text role size 15 color "#8ea2b8" font "fonts/lxgw_xihei_screen.ttf" min_width 160 yalign 0.5
                                 text val size 15 color "#e4eef9" font "fonts/lxgw_xihei.ttf" yalign 0.5
+
+                add Solid("#dce8f51c", xsize=1340, ysize=1)
+
+                # Official Origin Links & Manual Update Check (Zero Background Telemetry)
+                vbox:
+                    xfill True
+                    spacing 14
+
+                    hbox:
+                        spacing 14
+                        yalign 0.5
+
+                        button:
+                            action OpenURL(OFFICIAL_GITHUB_URL)
+                            ysize 40
+                            background Frame("gui/mist/pill_active.png", 18, 14)
+                            hover_background Frame("gui/mist/pill_hover.png", 18, 14)
+                            padding (20, 0)
+                            text ui_tr("GitHub 开源仓库", "GitHub Repository") size 14 color "#eef4fa" hover_color "#ffffff" font "fonts/lxgw_xihei_screen.ttf" yalign 0.5
+
+                        button:
+                            action OpenURL(OFFICIAL_BILIBILI_URL)
+                            ysize 40
+                            background Frame("gui/mist/pill_idle.png", 18, 14)
+                            hover_background Frame("gui/mist/pill_hover.png", 18, 14)
+                            padding (20, 0)
+                            text ui_tr("作者 B 站主页", "Author Bilibili") size 14 color "#dce6f2" hover_color "#ffffff" font "fonts/lxgw_xihei.ttf" yalign 0.5
+
+                        button:
+                            action Function(tsuki_trigger_manual_update_check)
+                            ysize 40
+                            background Frame("gui/mist/pill_idle.png", 18, 14)
+                            hover_background Frame("gui/mist/pill_hover.png", 18, 14)
+                            padding (20, 0)
+                            text (ui_tr("检查中...", "Checking...") if _upd_st == "checking" else ui_tr("手动检查更新", "Check Updates")) size 14 color ("#a2c6e6" if _upd_st == "checking" else "#dce6f2") hover_color "#ffffff" font "fonts/lxgw_xihei.ttf" yalign 0.5
+
+                        if _upd_st == "available":
+                            button:
+                                action OpenURL(_upd_url)
+                                ysize 40
+                                background Frame("gui/mist/pill_gold.png", 18, 14)
+                                hover_background Frame("gui/mist/pill_hover.png", 18, 14)
+                                padding (18, 0)
+                                text (f"New Release {_upd_ver} · Download" if is_ui_en() else f"发现新版本 {_upd_ver} · 点击前往") size 14 color "#fff5d8" font "fonts/lxgw_xihei_screen.ttf" yalign 0.5
+                        elif _upd_st == "latest":
+                            text (f"Up to date ({_upd_ver})" if is_ui_en() else f"当前已是最新版本（{_upd_ver}）") size 13 color "#8ee6c6" font "fonts/lxgw_xihei.ttf" yalign 0.5
+                        elif _upd_st == "unavailable":
+                            text ui_tr("暂未检测到公开发行版本，可直接访问 GitHub 查看", "No public release detected yet; check GitHub directly") size 13 color "#93a5bc" font "fonts/lxgw_xihei.ttf" yalign 0.5
+                        elif _upd_st == "error":
+                            text ui_tr("检查超时，请直接点击左侧 GitHub 按钮访问", "Request timed out; open GitHub directly") size 13 color "#e0a2ac" font "fonts/lxgw_xihei.ttf" yalign 0.5
+                        elif _upd_st == "idle":
+                            text ui_tr(f"当前版本 v{config.version}（仅手动触发，启动不自动联网）", f"v{config.version} (manual check only; never connects automatically)") size 13 color "#7e90a6" font "fonts/lxgw_xihei.ttf" yalign 0.5
+
+                    text ui_tr(
+                        "永久免费开源，谨防付费倒卖与过期搬运；获取最新版与反馈问题请访问上方官方主页。",
+                        "Free and open-source forever. Beware of paid resellers or outdated reposts; visit the official pages above for updates and feedback."
+                    ) size 13 color "#9db2c8" font "fonts/lxgw_xihei.ttf"
 
                 text ui_tr(
                     "本项目为非官方开源兼容引擎，与 TYPE-MOON 无关联；所有原作版权归 TYPE-MOON / Notes Co., Ltd. 所有。",

@@ -20,6 +20,15 @@ import locale
 import threading
 import subprocess
 import traceback
+import webbrowser
+import urllib.request
+import urllib.error
+import json
+
+APP_VERSION = "2.0.0"
+OFFICIAL_GITHUB_URL = "https://github.com/En-nagakiro/BlueGlassHD"
+OFFICIAL_RELEASES_URL = "https://github.com/En-nagakiro/BlueGlassHD/releases"
+OFFICIAL_BILIBILI_URL = "https://space.bilibili.com/1601243445"
 
 if getattr(sys, "frozen", False):
     APP_ROOT = os.path.dirname(os.path.abspath(sys.executable))
@@ -85,7 +94,15 @@ I18N = {
         "status_fail": "导入失败，请查看上方日志定位原因。",
         "btn_start": "开始导入",
         "btn_play": "启动游戏",
-        "footer_note": "开源 BYOA 工具 · 仅读取本地正版文件",
+        "footer_note": f"v{APP_VERSION} · 永久免费开源，谨防付费倒卖",
+        "link_github": "GitHub",
+        "link_bili": "B站主页",
+        "link_update": "检查更新",
+        "upd_checking": "检查中...",
+        "upd_latest": "已是最新 ({v})",
+        "upd_avail": "有新版 {v}",
+        "upd_none": "暂无公开发布",
+        "upd_err": "连接超时",
         "dlg_no_eng_t": "缺少引擎目录",
         "dlg_no_eng_m": "未检测到引擎核心（game/ui），请将本工具放回解压后的游戏根目录再运行。",
         "dlg_bad_src_t": "目录无效",
@@ -130,7 +147,15 @@ I18N = {
         "status_fail": "Import failed. Check the log above for details.",
         "btn_start": "Start Import",
         "btn_play": "Launch Game",
-        "footer_note": "Open-Source BYOA Tool · Reads Local Files Only",
+        "footer_note": f"v{APP_VERSION} · Free & open-source · Beware of paid resellers",
+        "link_github": "GitHub",
+        "link_bili": "Bilibili",
+        "link_update": "Check Updates",
+        "upd_checking": "Checking...",
+        "upd_latest": "Up to date ({v})",
+        "upd_avail": "New: {v}",
+        "upd_none": "No public release",
+        "upd_err": "Timed out",
         "dlg_no_eng_t": "Missing Engine Directory",
         "dlg_no_eng_m": "Engine core (game/ui) not found. Move BYOA_Importer.exe back into the unzipped game root.",
         "dlg_bad_src_t": "Invalid Folder",
@@ -354,8 +379,98 @@ def launch_gui():
     ftr = tk.Frame(ftr_wrap, bg="#161f2d", padx=24, pady=12)
     ftr.pack(fill="x")
 
-    lbl_footer = tk.Label(ftr, text=T("footer_note"), font=ui_small, fg=FG_SEC, bg="#161f2d")
-    lbl_footer.pack(side="left", pady=4)
+    ftr_left = tk.Frame(ftr, bg="#161f2d")
+    ftr_left.pack(side="left")
+
+    lbl_footer = tk.Label(ftr_left, text=T("footer_note"), font=ui_small, fg=FG_SEC, bg="#161f2d", anchor="w")
+    lbl_footer.pack(anchor="w")
+
+    ftr_links = tk.Frame(ftr_left, bg="#161f2d")
+    ftr_links.pack(anchor="w", pady=(2, 0))
+
+    btn_link_gh = tk.Button(
+        ftr_links, text=T("link_github"), font=ui_small, fg=ACCENT, bg="#161f2d",
+        activebackground="#161f2d", activeforeground="#ffffff", relief="flat", bd=0,
+        padx=0, pady=0, cursor="hand2", command=lambda: webbrowser.open(OFFICIAL_GITHUB_URL),
+    )
+    btn_link_gh.pack(side="left")
+    tk.Label(ftr_links, text="  ·  ", font=ui_small, fg="#516278", bg="#161f2d").pack(side="left")
+    btn_link_bili = tk.Button(
+        ftr_links, text=T("link_bili"), font=ui_small, fg=ACCENT, bg="#161f2d",
+        activebackground="#161f2d", activeforeground="#ffffff", relief="flat", bd=0,
+        padx=0, pady=0, cursor="hand2", command=lambda: webbrowser.open(OFFICIAL_BILIBILI_URL),
+    )
+    btn_link_bili.pack(side="left")
+    tk.Label(ftr_links, text="  ·  ", font=ui_small, fg="#516278", bg="#161f2d").pack(side="left")
+
+    upd_state = {"busy": False, "url": OFFICIAL_RELEASES_URL}
+
+    def _parse_ver(v):
+        nums = [int(x) for x in re.findall(r"\d+", str(v))]
+        while len(nums) < 3:
+            nums.append(0)
+        return tuple(nums[:3])
+
+    def on_check_update():
+        if upd_state["busy"]:
+            return
+        upd_state["busy"] = True
+        btn_link_upd.config(text=T("upd_checking"), fg=FG_SEC)
+
+        def _check_worker():
+            latest = None
+            target = OFFICIAL_RELEASES_URL
+            try:
+                req = urllib.request.Request(
+                    OFFICIAL_RELEASES_URL + "/latest",
+                    headers={"User-Agent": f"BlueGlassHD/{APP_VERSION}"},
+                )
+                with urllib.request.urlopen(req, timeout=5) as resp:
+                    final_url = resp.geturl()
+                    m = re.search(r"/releases/tag/([^/?#]+)", final_url)
+                    if m:
+                        latest = m.group(1)
+                        target = final_url
+            except urllib.error.HTTPError as he:
+                if he.code == 404:
+                    msg_q.put(("upd", ("none", "", OFFICIAL_RELEASES_URL)))
+                    return
+            except Exception:
+                pass
+
+            if not latest:
+                try:
+                    req2 = urllib.request.Request(
+                        "https://api.github.com/repos/En-nagakiro/BlueGlassHD/releases/latest",
+                        headers={"User-Agent": f"BlueGlassHD/{APP_VERSION}", "Accept": "application/vnd.github+json"},
+                    )
+                    with urllib.request.urlopen(req2, timeout=5) as resp2:
+                        data = json.loads(resp2.read().decode("utf-8", errors="replace"))
+                        latest = (data.get("tag_name") or "").strip()
+                        target = data.get("html_url") or OFFICIAL_RELEASES_URL
+                except urllib.error.HTTPError as he2:
+                    if he2.code == 404:
+                        msg_q.put(("upd", ("none", "", OFFICIAL_RELEASES_URL)))
+                        return
+                except Exception:
+                    msg_q.put(("upd", ("err", "", OFFICIAL_RELEASES_URL)))
+                    return
+
+            if not latest:
+                msg_q.put(("upd", ("none", "", OFFICIAL_RELEASES_URL)))
+            elif _parse_ver(latest) > _parse_ver(APP_VERSION):
+                msg_q.put(("upd", ("avail", latest, target)))
+            else:
+                msg_q.put(("upd", ("latest", latest, target)))
+
+        threading.Thread(target=_check_worker, daemon=True).start()
+
+    btn_link_upd = tk.Button(
+        ftr_links, text=T("link_update"), font=ui_small, fg=FG_SEC, bg="#161f2d",
+        activebackground="#161f2d", activeforeground="#ffffff", relief="flat", bd=0,
+        padx=0, pady=0, cursor="hand2", command=on_check_update,
+    )
+    btn_link_upd.pack(side="left")
 
     def on_launch_game():
         cmd = detect_game_launcher(tgt_var.get().strip())
@@ -613,6 +728,10 @@ def launch_gui():
         btn_start.config(text=T("btn_start"))
         btn_play.config(text=T("btn_play"))
         lbl_footer.config(text=T("footer_note"))
+        btn_link_gh.config(text=T("link_github"))
+        btn_link_bili.config(text=T("link_bili"))
+        if not upd_state["busy"]:
+            btn_link_upd.config(text=T("link_update"), fg=FG_SEC, command=on_check_update)
         btn_lang_zh.config(
             bg=("#2e5d8c" if new_lang == "zh" else BG_INPUT),
             fg=("#ffffff" if new_lang == "zh" else FG_SEC),
@@ -646,6 +765,21 @@ def launch_gui():
                 kind, payload = msg_q.get_nowait()
                 if kind == "log":
                     append_log(payload)
+                elif kind == "upd":
+                    upd_state["busy"] = False
+                    st_k, ver_s, u_url = payload
+                    upd_state["url"] = u_url
+                    if st_k == "avail":
+                        btn_link_upd.config(
+                            text=T("upd_avail").format(v=ver_s), fg=GOLD,
+                            command=lambda u=u_url: webbrowser.open(u),
+                        )
+                    elif st_k == "latest":
+                        btn_link_upd.config(text=T("upd_latest").format(v=ver_s), fg=MINT, command=on_check_update)
+                    elif st_k == "none":
+                        btn_link_upd.config(text=T("upd_none"), fg=FG_SEC, command=on_check_update)
+                    else:
+                        btn_link_upd.config(text=T("upd_err"), fg=ROSE, command=on_check_update)
                 elif kind == "done":
                     state["active"] = False
                     btn_b_src.config(state="normal")

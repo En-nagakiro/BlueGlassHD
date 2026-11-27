@@ -107,23 +107,48 @@ screen byoa_setup_required():
                     ) size 13 color "#9fb2c8" font "fonts/lxgw_xihei.ttf"
 
             hbox:
-                xalign 1.0
-                spacing 14
-                button:
-                    action Function(renpy.reload_script)
-                    ysize 42
-                    background Frame("gui/mist/pill_active.png", 20, 16)
-                    hover_background Frame("gui/mist/pill_hover.png", 20, 16)
-                    padding (24, 0)
-                    text ui_tr("重新检测", "Re-check") size 14 color "#ffffff" font "fonts/lxgw_xihei_screen.ttf" yalign 0.5
+                xfill True
+                yalign 0.5
 
-                button:
-                    action Quit(confirm=False)
-                    ysize 42
-                    background Frame("gui/mist/pill_idle.png", 20, 16)
-                    hover_background Frame("gui/mist/pill_rose.png", 20, 16)
-                    padding (24, 0)
-                    text ui_tr("退出", "Quit") size 14 color "#d0dce8" hover_color "#ffffff" font "fonts/lxgw_xihei.ttf" yalign 0.5
+                vbox:
+                    spacing 4
+                    yalign 0.5
+                    hbox:
+                        spacing 12
+                        yalign 0.5
+                        text f"v{config.version}" size 12 color "#7e92a8" font "fonts/lxgw_xihei.ttf" yalign 0.5
+                        text "·" size 12 color "#5f7288" font "fonts/lxgw_xihei.ttf" yalign 0.5
+                        button:
+                            action OpenURL(OFFICIAL_GITHUB_URL)
+                            background None
+                            padding (0, 0)
+                            text "GitHub" size 13 color "#9ec4e8" hover_color "#ffffff" font "fonts/lxgw_xihei_screen.ttf"
+                        text "·" size 12 color "#5f7288" font "fonts/lxgw_xihei.ttf" yalign 0.5
+                        button:
+                            action OpenURL(OFFICIAL_BILIBILI_URL)
+                            background None
+                            padding (0, 0)
+                            text ui_tr("B 站主页", "Bilibili") size 13 color "#9ec4e8" hover_color "#ffffff" font "fonts/lxgw_xihei_screen.ttf"
+                    text ui_tr("永久免费开源，谨防付费倒卖与过期搬运", "Free & open-source forever · Beware of paid resellers") size 12 color "#7c90a6" font "fonts/lxgw_xihei.ttf"
+
+                hbox:
+                    xalign 1.0
+                    spacing 14
+                    button:
+                        action Function(renpy.reload_script)
+                        ysize 42
+                        background Frame("gui/mist/pill_active.png", 20, 16)
+                        hover_background Frame("gui/mist/pill_hover.png", 20, 16)
+                        padding (24, 0)
+                        text ui_tr("重新检测", "Re-check") size 14 color "#ffffff" font "fonts/lxgw_xihei_screen.ttf" yalign 0.5
+
+                    button:
+                        action Quit(confirm=False)
+                        ysize 42
+                        background Frame("gui/mist/pill_idle.png", 20, 16)
+                        hover_background Frame("gui/mist/pill_rose.png", 20, 16)
+                        padding (24, 0)
+                        text ui_tr("退出", "Quit") size 14 color "#d0dce8" hover_color "#ffffff" font "fonts/lxgw_xihei.ttf" yalign 0.5
 
     key "K_ESCAPE" action NullAction()
     key "game_menu" action NullAction()

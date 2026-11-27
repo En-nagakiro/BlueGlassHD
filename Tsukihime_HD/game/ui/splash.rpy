@@ -34,7 +34,7 @@ label splashscreen:
     # 2. Title Theme swells in with locally imported opening epigraph (core/byoa_meta.rpy)
     $ _title_bgm = tsuki_bgm_path("08")
     if _title_bgm:
-        $ renpy.music.play(_title_bgm, channel="music", fadein=2.2)
+        $ renpy.music.play(_title_bgm, channel="music", loop=True, fadein=2.2, if_changed=True)
 
     if BYOA_SPLASH_QUOTE:
         $ _sub_block = f"\n\n{{size=15}}{{color=#7b92ac}}{{font=fonts/lora_italic.ttf}}{BYOA_SPLASH_SUB}{{/font}}{{/color}}{{/size}}" if BYOA_SPLASH_SUB else ""

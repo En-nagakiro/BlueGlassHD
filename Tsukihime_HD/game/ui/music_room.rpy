@@ -72,7 +72,7 @@ screen music_room():
             text ui_tr("2000 原版原声带 · KATE", "2000 Original Soundtrack · KATE") size 14 color "#8599b0" font "fonts/lxgw_xihei.ttf" yalign 0.58
 
         button:
-            action [If(main_menu and _ret_bgm, Play("music", _ret_bgm, fadein=1.0)), Return()]
+            action [If(main_menu and _ret_bgm, Play("music", _ret_bgm, if_changed=True, fadein=1.0)), Return()]
             xalign 1.0
             yalign 0.5
             ysize 40
@@ -233,5 +233,5 @@ screen music_room():
 
                     bar value Preference("music volume") xalign 0.5 xsize 460
 
-    key "K_ESCAPE" action [If(main_menu and _ret_bgm, Play("music", _ret_bgm, fadein=1.0)), Return()]
-    key "game_menu" action [If(main_menu and _ret_bgm, Play("music", _ret_bgm, fadein=1.0)), Return()]
+    key "K_ESCAPE" action [If(main_menu and _ret_bgm, Play("music", _ret_bgm, if_changed=True, fadein=1.0)), Return()]
+    key "game_menu" action [If(main_menu and _ret_bgm, Play("music", _ret_bgm, if_changed=True, fadein=1.0)), Return()]

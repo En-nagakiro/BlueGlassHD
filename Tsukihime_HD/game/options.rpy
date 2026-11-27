@@ -17,8 +17,9 @@ init -1:
     define config.has_music = True
     define config.has_voice = False
 
-    # Title music is resolved dynamically via tsuki_bgm_path("08") across WAV/FLAC/OGG/MP3
-    # so empty BYOA packages boot cleanly without missing-audio errors.
+    # Title music is resolved dynamically at init 0 below via tsuki_bgm_path("08")
+    # so splashscreen -> main_menu hands off seamlessly without Ren'Py calling music.stop(),
+    # while empty BYOA packages still keep config.main_menu_music = None.
 
     define config.enter_transition = Dissolve(0.25)
     define config.exit_transition = Dissolve(0.25)
@@ -49,6 +50,13 @@ init -1:
     define config.autosave_on_quit = True
 
 init python:
+    # Dynamically bind main_menu_music when Track 08 is imported so 00start.rpy keeps
+    # splashscreen music playing seamlessly (if_changed=True) instead of stopping it.
+    _mm_bgm_init = tsuki_bgm_path("08")
+    if _mm_bgm_init:
+        config.main_menu_music = _mm_bgm_init
+        config.main_menu_music_fadein = 1.5
+
     # Standard exclusions
     build.classify('**~', None)
     build.classify('**.bak', None)

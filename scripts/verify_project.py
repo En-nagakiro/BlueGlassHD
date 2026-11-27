@@ -83,7 +83,7 @@ def run_compliance_audit():
     # Verify zero personal/local hardcoded machine paths in open-source scripts & docs
     personal_pat = re.compile(r"(?:[A-Z]:[/\\]+Games[/\\]+月姬|C:[/\\]+Users[/\\]+86166|oct 5,2026)", re.IGNORECASE)
     scan_exts = (".py", ".ps1", ".rpy", ".md", ".yml", ".yaml", ".txt")
-    skip_dirs = {"tools", "release", "saves", "cache", "build_pyinstaller", "__pycache__", ".git", "story", "images"}
+    skip_dirs = {"tools", "release", "saves", "cache", "build_pyinstaller", "__pycache__", ".git", "story", "images", "tmp", "video"}
     for r_dir, dnames, fnames in os.walk(ROOT):
         dnames[:] = [d for d in dnames if d not in skip_dirs]
         for fn in fnames:

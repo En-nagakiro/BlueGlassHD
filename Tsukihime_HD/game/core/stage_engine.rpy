@@ -41,10 +41,10 @@ init -2:
         yalign 0.5
 
     ## Chapter day banner gentle fade-in (authentic NScripter 16-frame alpha ramp)
-    transform tsuki_phase_day_fade(px, py):
+    transform tsuki_phase_day_fade(px, py, tw=720, th=90):
         xpos px
         ypos py
-        xysize (720, 90)
+        xysize (tw, th)
         alpha 0.0
         easein 0.55 alpha 1.0
 
@@ -391,12 +391,34 @@ init -2 python:
             if tname:
                 _render_tachi_slot(s, tname)
 
+    def _compute_phase_card_rect(path, side, is_day_badge=False):
+        """
+        Compute aspect-preserving 1080p rect (x, y, w, h) for NScripter phase cards
+        (handles 320x88 horizontal banners, 320x480 vertical cards, and 320x40 day badges
+        identically across 1x/4x assets and 4:3 / 16:9 modes without vertical/horizontal stretch).
+        """
+        try:
+            iw, ih = renpy.image_size(path)
+        except Exception:
+            iw, ih = (1280, 160 if is_day_badge else 1920)
+        tw = 720
+        th = max(1, int(round(tw * (float(ih) / float(iw))))) if iw else (90 if is_day_badge else 1080)
+        if persistent.aspect_mode == "16x9_full":
+            px = 80 if side == "left" else (1920 - tw - 80)
+        else:
+            px = 240 if side == "left" else 960
+        if is_day_badge:
+            py = 108 if side == "left" else 990
+        else:
+            py = 1080 - th
+        return px, py, tw, th
+
     config.after_load_callbacks.append(tsuki_refresh_stage)
 
 
 ## ==============================================================================
 ## Authentic 3-Layer Tsukihime Chapter Title Card Sequences
-## ($phasebg + $phasetitle_a half-screen calligraphy + $phasetitle_b day badge)
+## ($phasebg + $phasetitle_a calligraphy + $phasetitle_b day badge)
 ## ==============================================================================
 label tsuki_left_phase:
     nvl clear
@@ -412,20 +434,19 @@ label tsuki_left_phase:
         else:
             tsuki_solid("#000000", "crossfade_fst")
 
-        # 2. Half-screen vertical calligraphic title card on LEFT half of 4:3 frame
+        # 2. Chapter title calligraphy on LEFT half (preserves exact native aspect ratio!)
         if phase_title_a and phase_title_a in WORD_FILES:
             p_a = WORD_FILES[phase_title_a]
-            px_a = 240 if persistent.aspect_mode != "16x9_full" else 0
-            w_a = 720 if persistent.aspect_mode != "16x9_full" else 960
-            disp_a = Transform(Image(p_a), xysize=(w_a, 1080), xpos=px_a, ypos=0)
+            px_a, py_a, w_a, h_a = _compute_phase_card_rect(p_a, "left", is_day_badge=False)
+            disp_a = Transform(Image(p_a), xysize=(w_a, h_a), xpos=px_a, ypos=py_a)
             renpy.show("phase_a", what=disp_a, zorder=22)
             renpy.with_statement(tsuki_get_transition("rcartain_fst"))
 
         # 3. Day badge fades in at top-left (NScripter 0, 48 -> 240, 108 in 1080p 4:3)
         if phase_title_b and phase_title_b in WORD_FILES:
             p_b = WORD_FILES[phase_title_b]
-            px_b = 240 if persistent.aspect_mode != "16x9_full" else 80
-            renpy.show("phase_b", what=Image(p_b), at_list=[tsuki_phase_day_fade(px_b, 108)], zorder=23)
+            px_b, py_b, w_b, h_b = _compute_phase_card_rect(p_b, "left", is_day_badge=True)
+            renpy.show("phase_b", what=Image(p_b), at_list=[tsuki_phase_day_fade(px_b, py_b, w_b, h_b)], zorder=23)
 
     $ renpy.pause(2.2)
     $ renpy.hide("phase_a")
@@ -449,20 +470,19 @@ label tsuki_right_phase:
         else:
             tsuki_solid("#000000", "crossfade_fst")
 
-        # 2. Half-screen vertical calligraphic title card on RIGHT half of 4:3 frame
+        # 2. Chapter title banner/calligraphy on RIGHT half (bottom-aligned, exact native aspect ratio!)
         if phase_title_a and phase_title_a in WORD_FILES:
             p_a = WORD_FILES[phase_title_a]
-            px_a = 960
-            w_a = 720 if persistent.aspect_mode != "16x9_full" else 960
-            disp_a = Transform(Image(p_a), xysize=(w_a, 1080), xpos=px_a, ypos=0)
+            px_a, py_a, w_a, h_a = _compute_phase_card_rect(p_a, "right", is_day_badge=False)
+            disp_a = Transform(Image(p_a), xysize=(w_a, h_a), xpos=px_a, ypos=py_a)
             renpy.show("phase_a", what=disp_a, zorder=22)
             renpy.with_statement(tsuki_get_transition("lcartain_fst"))
 
-        # 3. Day badge fades in at bottom-right (NScripter 320, 440 -> 960, 960 in 1080p 4:3)
+        # 3. Day badge fades in at bottom-right (NScripter 320, 440 -> 960, 990 in 1080p 4:3)
         if phase_title_b and phase_title_b in WORD_FILES:
             p_b = WORD_FILES[phase_title_b]
-            px_b = 960
-            renpy.show("phase_b", what=Image(p_b), at_list=[tsuki_phase_day_fade(px_b, 955)], zorder=23)
+            px_b, py_b, w_b, h_b = _compute_phase_card_rect(p_b, "right", is_day_badge=True)
+            renpy.show("phase_b", what=Image(p_b), at_list=[tsuki_phase_day_fade(px_b, py_b, w_b, h_b)], zorder=23)
 
     $ renpy.pause(2.2)
     $ renpy.hide("phase_a")

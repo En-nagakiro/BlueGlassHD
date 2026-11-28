@@ -12,11 +12,11 @@ init -1 python:
             'ark_e06a', 'ark_e06b', 'ark_e07', 'ark_e08', 'ark_e09', 'ark_e10',
             'ark_f01', 'ark_f02', 'ark_f03',
             'ark_h01', 'ark_h02', 'ark_h03', 'ark_h04', 'ark_h05', 'ark_h06', 'ark_h07',
-            'ark_h08', 'ark_h09', 'ark_h10', 'ark_h10b', 'ark_h11', 'ark_h12', 'ark_h13',
+            'ark_h08', 'ark_h09', 'ark_h10', 'ark_h11', 'ark_h12', 'ark_h13',
         ],
         "ciel": [
             'cel_e01', 'cel_e02a', 'cel_e02b', 'cel_e03a', 'cel_e03b', 'cel_e04', 'cel_e05a',
-            'cel_e05b', 'cel_e06a', 'cel_e06b', 'cel_e07a', 'cel_e07b', 'cel_e07c', 'cel_e08',
+            'cel_e05b', 'cel_e06a', 'cel_e06b', 'cel_e07a', 'cel_e07b', 'cel_e08',
             'cel_e09', 'cel_f01', 'cel_f01b', 'cel_f02',
             'cel_h01', 'cel_h02', 'cel_h03a', 'cel_h03b', 'cel_h04a', 'cel_h04b', 'cel_h05a',
             'cel_h05b', 'cel_h06a', 'cel_h06b', 'cel_h07a', 'cel_h07b', 'cel_h08a', 'cel_h08b',
@@ -30,7 +30,7 @@ init -1 python:
             'aki_h08', 'aki_h09', 'aki_h10', 'aki_h11', 'aki_h12', 'aki_h13', 'aki_h14', 'aki_h15',
         ],
         "hisui": [
-            'his_e01', 'his_e01b', 'his_e02', 'his_e02b', 'his_e02b2', 'his_e03', 'his_e04',
+            'his_e01', 'his_e01b', 'his_e02', 'his_e02b', 'his_e03', 'his_e04',
             'his_e05', 'his_e06', 'his_e07a', 'his_e07b', 'his_e08', 'his_e09',
             'his_f01', 'his_f02', 'his_f03',
             'his_h01', 'his_h02', 'his_h03', 'his_h04a', 'his_h04b', 'his_h05', 'his_h06',

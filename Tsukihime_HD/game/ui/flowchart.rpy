@@ -78,8 +78,8 @@ init -2 python:
             "seen_label": "s51", "branch_label": "f51", "mode": "continue",
             "thumb": "images/bg/bg_22b.webp", "cast": "远野志贵、爱尔奎特",
             "desc": "梦中回想起青子老师关于「线」的教诲。表线第二日的学园日常背后，决定命运的邂逅正悄然逼近。",
-            "branch_info": "表线第二日入口 · 通往第五节课后的商业街十七分割。",
-            "preset": {"ark_regard": 3, "flg6": 1},
+            "branch_info": "表线第二日入口 · 通往第五节课后的商业街十七分割（保留进入爱尔奎特/希耶尔双线条件）。",
+            "preset": {"ark_regard": 3, "ciel_regard": 2, "flg6": 1},
         },
         {
             "id": "com_07", "cat": "common", "day": "DAY 02 · 十七分割",
@@ -88,7 +88,7 @@ init -2 python:
             "thumb": "images/cg/ark_e01.webp", "cast": "远野志贵、爱尔奎特",
             "desc": "第五节古文课的窗外落下一只乌鸦。早退步入商业街的志贵，在金发白衣少女擦肩的瞬间被不可遏制的杀意彻底吞噬。",
             "branch_info": "《月姬》表线最震撼的核心引爆点。",
-            "preset": {"ark_regard": 3, "flg6": 1},
+            "preset": {"ark_regard": 3, "ciel_regard": 2, "flg6": 1},
         },
 
         # --- 表线 · 爱尔奎特线 (ARCUEID ROUTE) ---
@@ -125,7 +125,7 @@ init -2 python:
             "seen_label": "s94", "branch_label": "f94", "mode": "continue",
             "thumb": "images/bg/bg_28b.webp", "cast": "远野志贵、爱尔奎特",
             "desc": "清晨在爱尔奎特的酒店房间醒来，两人开始正式联手追查潜伏在三咲町的「蛇」——转生无限者罗阿。",
-            "branch_info": "第四日章节入口 · 决定进入爱尔奎特线还是希耶尔线的前置节点。",
+            "branch_info": "第三日酒店决战延续 · 通往第四日爱尔奎特线（需提前触发第三日街头相遇旗标 flg2 才会转向希耶尔线）。",
             "preset": {"ark_regard": 7, "flg6": 1},
         },
         {
@@ -200,7 +200,7 @@ init -2 python:
             "thumb": "images/cg/cel_e03a.webp", "cast": "远野志贵、希耶尔、爱尔奎特",
             "desc": "灼热的雨中梦境与纷乱的情感。希耶尔与爱尔奎特的对立逐渐浮出水面，志贵直面学姐深藏心底的罪业。",
             "branch_info": "希耶尔线第七日主线入口。",
-            "preset": {"ciel_regard": 9, "flgE": 1, "flg6": 1},
+            "preset": {"ciel_regard": 11, "flgE": 1, "flg6": 1},
         },
         {
             "id": "ciel_03", "cat": "ciel", "day": "DAY 09 · 阴暗八年",
@@ -265,7 +265,7 @@ init -2 python:
             "thumb": "images/bg/cmo_19.webp", "cast": "远野志贵、远野秋叶、弓塚五月",
             "desc": "遥远酷暑的蝉鸣回忆掠过脑海。里线第三日，悄然蔓延的吸血怪异正步步逼近身边的同班少女弓塚五月。",
             "branch_info": "里线第三日主干 · 弓塚悲剧与宅邸谜团展开。",
-            "preset": {"akiha_regard": 5, "flg6": 1},
+            "preset": {"akiha_regard": 5, "flgP": 1, "flg6": 1},
         },
         {
             "id": "aki_03", "cat": "akiha", "day": "DAY 04 · 茜之兆",
@@ -274,7 +274,7 @@ init -2 python:
             "thumb": "images/cg/aki_e01.webp", "cast": "远野志贵、远野秋叶",
             "desc": "在强光下睁开双眼。作为远野家当代家主的妹妹秋叶，高傲冷静的外表之下隐藏着以红发为代价的血脉诅咒。",
             "branch_info": "秋叶线第四日关键篇章。",
-            "preset": {"akiha_regard": 7, "flg6": 1},
+            "preset": {"akiha_regard": 7, "flgP": 1, "flg6": 1},
         },
         {
             "id": "aki_04", "cat": "akiha", "day": "DAY 05 · 剧痛苏醒",
@@ -575,7 +575,7 @@ init -1 python:
         "f52a": "arc_09", "s52": "arc_09", "f520": "arc_09", "s520": "arc_09",
         "f53a": "arc_10", "s53": "arc_10", "f521": "arc_10", "s521": "arc_10",
         "f527": "ciel_06", "s527": "ciel_06",
-        "f528": "ciel_07", "s528": "ciel_07",
+        "f526": "ciel_07", "s526": "ciel_07",
         "f541": "aki_08",  "s541": "aki_08",
         "f542": "aki_09",  "s542": "aki_09",
         "f530": "his_06",  "s530": "his_06",

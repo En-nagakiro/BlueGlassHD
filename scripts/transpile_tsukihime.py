@@ -257,7 +257,10 @@ class TsukihimeASTTranspiler:
         for line in raw_lines:
             stripped = line.strip()
             if stripped.startswith("*"):
-                lbl_name = stripped[1:].split()[0].replace("*", "").lower()
+                lbl_token = stripped[1:].split(";")[0].strip()
+                if not lbl_token:
+                    continue
+                lbl_name = lbl_token.split()[0].replace("*", "").lower()
                 if lbl_name == "define":
                     current_label = "define"
                     continue
@@ -374,7 +377,7 @@ class TsukihimeASTTranspiler:
         cond_py = re.sub(r"\|\|", " or ", cond_py)
         return cond_py
 
-    def transpile_block(self, lbl, lines):
+    def transpile_block(self, lbl, lines, next_label=None):
         out = [f"label {lbl}:\n"]
 
         # Clean endofplay: reset single-run vars and return cleanly to Main Menu (NO infinite loop!)
@@ -552,15 +555,17 @@ class TsukihimeASTTranspiler:
                 def emit_phase_branch(blist, ind):
                     for bl in blist:
                         if bl.startswith("mov $phasebg"):
-                            m = re.search(r'image\\(bg|event)\\([^"]+)', bl)
+                            m = re.search(r'image[\\/](bg|event)[\\/]([^"]+)', bl, re.IGNORECASE)
                             if m:
+                                bkind = "cg" if m.group(1).lower() == "event" else "bg"
                                 out.append(f'{ind}$ phase_bg = "{os.path.splitext(m.group(2))[0]}"\n')
+                                out.append(f'{ind}$ phase_bg_kind = "{bkind}"\n')
                         elif bl.startswith("mov $phasetitle_a"):
-                            m = re.search(r'image\\word\\([^"]+)', bl)
+                            m = re.search(r'image[\\/]word[\\/]([^"]+)', bl, re.IGNORECASE)
                             if m:
                                 out.append(f'{ind}$ phase_title_a = "{os.path.splitext(m.group(1))[0]}"\n')
                         elif bl.startswith("mov $phasetitle_b"):
-                            m = re.search(r'image\\word\\([^"]+)', bl)
+                            m = re.search(r'image[\\/]word[\\/]([^"]+)', bl, re.IGNORECASE)
                             if m:
                                 out.append(f'{ind}$ phase_title_b = "{os.path.splitext(m.group(1))[0]}"\n')
                         elif bl.startswith("gosub *left_phase"):
@@ -602,17 +607,17 @@ class TsukihimeASTTranspiler:
 
             # Phase title variables (3-layer authentic chapter title cards!)
             if sline.startswith("mov $phasebg"):
-                m = re.search(r'image\\(bg|event)\\([^"]+)', sline)
+                m = re.search(r'image[\\/](bg|event)[\\/]([^"]+)', sline, re.IGNORECASE)
                 if m:
                     flush_chunk(clear_after=True)
                     folder, fn = m.groups()
                     bname = os.path.splitext(fn)[0]
                     out.append(f'    $ phase_bg = "{bname}"\n')
-                    out.append(f'    $ phase_bg_kind = "{"cg" if folder == "event" else "bg"}"\n')
+                    out.append(f'    $ phase_bg_kind = "{"cg" if folder.lower() == "event" else "bg"}"\n')
                 continue
 
             if sline.startswith("mov $phasetitle_a"):
-                m = re.search(r'image\\word\\([^"]+)', sline)
+                m = re.search(r'image[\\/]word[\\/]([^"]+)', sline, re.IGNORECASE)
                 if m:
                     flush_chunk(clear_after=True)
                     out.append(f'    $ phase_title_a = "{os.path.splitext(m.group(1))[0]}"\n')
@@ -621,7 +626,7 @@ class TsukihimeASTTranspiler:
                 continue
 
             if sline.startswith("mov $phasetitle_b"):
-                m = re.search(r'image\\word\\([^"]+)', sline)
+                m = re.search(r'image[\\/]word[\\/]([^"]+)', sline, re.IGNORECASE)
                 if m:
                     flush_chunk(clear_after=True)
                     out.append(f'    $ phase_title_b = "{os.path.splitext(m.group(1))[0]}"\n')
@@ -632,9 +637,10 @@ class TsukihimeASTTranspiler:
             # Background / CG / Full-RGB Word / Solid Fill
             if sline.startswith("bg "):
                 flush_chunk(clear_after=True)
-                m = re.search(r'bg\s+(?:(?:"image\\(bg|event|word)\\([^"]+)")|(#\w+))(?:\s*,\s*(.+))?', sline)
+                m = re.search(r'bg\s+(?:(?:"image[\\/](bg|event|word)[\\/]([^"]+)")|(#\w+))(?:\s*,\s*(.+))?', sline, re.IGNORECASE)
                 if m:
                     folder, fname, color, raw_tr = m.groups()
+                    folder = folder.lower() if folder else folder
                     tr = normalize_transition(raw_tr)
                     if color:
                         out.append(f'    $ tsuki_solid("{color.lower()}", "{tr}")\n')
@@ -675,7 +681,7 @@ class TsukihimeASTTranspiler:
             # Character Standing Sprite (3-slot dynamic engine!)
             if sline.startswith("ld "):
                 flush_chunk(clear_after=False)
-                m = re.search(r'ld\s+([lcr]),\s*":a;image\\tachi\\([^"]+)"(?:\s*,\s*(.+))?', sline)
+                m = re.search(r'ld\s+([lcr]),\s*":[^;]*;image[\\/]tachi[\\/]([^"]+)"(?:\s*,\s*(.+))?', sline, re.IGNORECASE)
                 if m:
                     slot, fname, raw_tr = m.groups()
                     tname = os.path.splitext(fname)[0]
@@ -722,10 +728,15 @@ class TsukihimeASTTranspiler:
             if sline.startswith("select ") or sline.startswith("select\t"):
                 flush_chunk(clear_after=True)
                 sel_lines = [sline]
-                while i < n_lines and (sel_lines[-1].endswith(",") or lines[i].strip().startswith(('"', "`"))):
-                    sel_lines.append(lines[i].strip())
-                    i += 1
-                    if not sel_lines[-1].endswith(","):
+                while i < n_lines:
+                    prev_code = sel_lines[-1].split(";")[0].strip()
+                    nxt_raw = lines[i].strip()
+                    if prev_code.endswith(",") or nxt_raw.startswith(('"', "`")):
+                        sel_lines.append(nxt_raw)
+                        i += 1
+                        if not nxt_raw.split(";")[0].strip().endswith(","):
+                            break
+                    else:
                         break
                 full_select_str = " ".join(sel_lines)
                 choices = [
@@ -930,6 +941,16 @@ class TsukihimeASTTranspiler:
                 flush_chunk(clear_after=False)
 
         flush_chunk(clear_after=False)
+        body_tail = [ln.strip() for ln in out[1:] if ln.strip() and not ln.strip().startswith("#")]
+        if not body_tail or not (
+            body_tail[-1] == "return"
+            or body_tail[-1].startswith("jump ")
+            or (any(x == "menu:" for x in body_tail[-25:]) and body_tail[-1].startswith("jump "))
+        ):
+            if next_label and lbl.startswith("f"):
+                out.append(f"    jump {next_label}\n")
+            elif lbl.startswith("s"):
+                out.append("    return\n")
         out.append("\n")
         return "".join(out)
 
@@ -948,10 +969,14 @@ class TsukihimeASTTranspiler:
             "story_badends_and_dojos.rpy": [],
         }
 
+        active_labels = [l for l in self.label_order if l not in DEAD_SYSTEM_LABELS]
+        next_active_map = {
+            active_labels[idx]: (active_labels[idx + 1] if idx + 1 < len(active_labels) else None)
+            for idx in range(len(active_labels))
+        }
+
         emitted = 0
-        for lbl in self.label_order:
-            if lbl in DEAD_SYSTEM_LABELS:
-                continue
+        for lbl in active_labels:
             emitted += 1
             if lbl in ("openning", "ending", "s20", "eclipse"):
                 chunks["story_prologue.rpy"].append(lbl)
@@ -978,7 +1003,7 @@ class TsukihimeASTTranspiler:
                 out_f.write(f"## Active labels: {len(lbl_list)}\n")
                 out_f.write("## ==========================================================================\n\n")
                 for lbl in lbl_list:
-                    out_f.write(self.transpile_block(lbl, self.labels[lbl]))
+                    out_f.write(self.transpile_block(lbl, self.labels[lbl], next_label=next_active_map.get(lbl)))
             print(f"      [OK] {fname:30s}: {len(lbl_list):4d} labels")
 
         # Write local story variables + bad-end choice metadata into core/story_variables.rpy

@@ -313,3 +313,43 @@ init -3 python:
     def is_byoa_assets_installed():
         st = get_byoa_status()
         return bool(st["story"] and st["images"] and st["title_art"])
+
+    # ==========================================================================
+    # Preferences Easter Egg: 7x Rapid Click on Heroines Tab -> Toggle Full Unlock
+    # ==========================================================================
+    import time as _time_mod
+
+    _HEROINE_TAB_EASTER_STATE = {"count": 0, "last_ts": 0.0}
+    HEROINE_TAB_EASTER_CLICKS = 7
+    HEROINE_TAB_EASTER_WINDOW = 2.5
+
+    def tsuki_reset_easter_click():
+        _HEROINE_TAB_EASTER_STATE["count"] = 0
+        _HEROINE_TAB_EASTER_STATE["last_ts"] = 0.0
+
+    def tsuki_on_pref_tab_click(tid):
+        """Track rapid consecutive clicks on Heroines tab to toggle persistent.unlock_all_routes.
+        Must return None so Ren'Py Function() action does not terminate the screen interaction.
+        """
+        if tid != "heroines":
+            tsuki_reset_easter_click()
+            return
+        now = _time_mod.monotonic()
+        if now - _HEROINE_TAB_EASTER_STATE["last_ts"] > HEROINE_TAB_EASTER_WINDOW:
+            _HEROINE_TAB_EASTER_STATE["count"] = 0
+        _HEROINE_TAB_EASTER_STATE["last_ts"] = now
+        _HEROINE_TAB_EASTER_STATE["count"] += 1
+        if _HEROINE_TAB_EASTER_STATE["count"] >= HEROINE_TAB_EASTER_CLICKS:
+            tsuki_reset_easter_click()
+            persistent.unlock_all_routes = not bool(persistent.unlock_all_routes)
+            renpy.save_persistent()
+            if persistent.unlock_all_routes:
+                renpy.notify(ui_tr(
+                    "彩蛋已解锁：全 Flowchart、CG 画廊与女主暖色立绘已开启（再连点 7 次可还原）",
+                    "Easter Egg: All Flowchart, Gallery CGs & Heroine portraits unlocked (7x click to revert)"
+                ))
+            else:
+                renpy.notify(ui_tr(
+                    "已关闭全解锁彩蛋，还原真实周目解锁进度",
+                    "Easter Egg disabled: restored authentic playthrough unlock progress"
+                ))

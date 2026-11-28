@@ -38,10 +38,10 @@ All screenshots below are captured directly from the un-imported open-source eng
 
 ## Player Quick Start (Recommended)
 
-Download and extract `BlueGlassHD-2.0.2-win-BYOA.zip` (with `.sha256` checksum) from [Latest Release](https://github.com/En-nagakiro/BlueGlassHD/releases/latest):
+Download and extract `BlueGlassHD-2.0.3-win-BYOA.zip` (with `.sha256` checksum) from [Latest Release](https://github.com/En-nagakiro/BlueGlassHD/releases/latest):
 
 ```text
-BlueGlassHD-2.0.2-win/
+BlueGlassHD-2.0.3-win/
 ├── BlueGlassHD.exe          # Game executable
 ├── BYOA_Importer.exe        # Bilingual GUI asset importer
 ├── game/                    # Open-source engine & OFL/IPA fonts
@@ -64,7 +64,7 @@ The release archive omits the upscaler binary to stay compact and work out of th
 1. Download `realesrgan-ncnn-vulkan-20220424-windows.zip` from the official [xinntao/Real-ESRGAN v0.2.5.0](https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0) release.
 2. Extract `realesrgan-ncnn-vulkan.exe` and its `models/` folder into `tools/realesrgan/` next to `BYOA_Importer.exe`:
    ```text
-   BlueGlassHD-2.0.2-win/
+   BlueGlassHD-2.0.3-win/
    ├── BYOA_Importer.exe
    └── tools/
        └── realesrgan/

@@ -1004,7 +1004,7 @@ screen preferences():
                         for tid, tlbl in tab_defs:
                             $ is_t = (pref_tab == tid)
                             button:
-                                action SetScreenVariable("pref_tab", tid)
+                                action [SetScreenVariable("pref_tab", tid), Function(tsuki_on_pref_tab_click, tid)]
                                 xsize 184
                                 ysize 42
                                 background (Frame("gui/mist/pill_active.png", 20, 16) if is_t else None)
@@ -1437,7 +1437,7 @@ screen preferences():
                             for hkey, hzh, hen, hvar, hcol, hends in NEAR_HEROINE_PROFILES:
                                 $ hval = 0 if main_menu else get_heroine_affection(hvar)
                                 $ hmax, hwarm = HEROINE_AFFECTION_SPEC.get(hvar, (15, 6))
-                                $ any_clr = any(is_ending_cleared(pv, sl) for pv, sl, _, _ in hends)
+                                $ any_clr = bool(persistent.unlock_all_routes or any(is_ending_cleared(pv, sl) for pv, sl, _, _ in hends))
                                 $ p_img = f"gui/portraits/{hkey}_warm.png" if (hval >= hwarm or any_clr) else f"gui/portraits/{hkey}_norm.png"
                                 $ bar_w = int(round(396 * min(1.0, hval / float(hmax))))
 
@@ -1487,7 +1487,7 @@ screen preferences():
                                             hbox:
                                                 spacing 12
                                                 for p_var, seen_lbl, elbl_zh, elbl_en in hends:
-                                                    $ ok = is_ending_cleared(p_var, seen_lbl)
+                                                    $ ok = bool(persistent.unlock_all_routes or is_ending_cleared(p_var, seen_lbl))
                                                     frame:
                                                         xsize 192
                                                         ysize 36
@@ -1505,6 +1505,8 @@ screen preferences():
                                 xalign 1.0
                                 yalign 0.5
                                 spacing 18
+                                if persistent.unlock_all_routes:
+                                    text ui_tr("全解锁彩蛋开启（连点标签 7 次可还原）", "All Unlocked (7x tab click to revert)") size 12 color "#a2c6e6" font "fonts/lxgw_xihei.ttf" yalign 0.5
                                 text (f"Endings {cleared_cnt} / 9" if is_en else f"已达成结局 {cleared_cnt} / 9") size 13 color "#dec894" font "fonts/lxgw_xihei_screen.ttf" yalign 0.5
                                 if tsuki_ok:
                                     text ui_tr("「月蝕」终章已解锁", "ECLIPSE Unlocked") size 13 color "#f5e4b4" font "fonts/lxgw_xihei_screen.ttf" yalign 0.5
@@ -1514,7 +1516,7 @@ screen preferences():
                             for hkey, hzh, hen, hvar, hcol, hends in FAR_HEROINE_PROFILES:
                                 $ hval = 0 if main_menu else get_heroine_affection(hvar)
                                 $ hmax, hwarm = HEROINE_AFFECTION_SPEC.get(hvar, (15, 6))
-                                $ any_clr = any(is_ending_cleared(pv, sl) for pv, sl, _, _ in hends)
+                                $ any_clr = bool(persistent.unlock_all_routes or any(is_ending_cleared(pv, sl) for pv, sl, _, _ in hends))
                                 $ p_img = f"gui/portraits/{hkey}_warm.png" if (hval >= hwarm or any_clr) else f"gui/portraits/{hkey}_norm.png"
                                 $ bar_w = int(round(234 * min(1.0, hval / float(hmax))))
 
@@ -1561,7 +1563,7 @@ screen preferences():
                                             vbox:
                                                 spacing 10
                                                 for p_var, seen_lbl, elbl_zh, elbl_en in hends:
-                                                    $ ok = is_ending_cleared(p_var, seen_lbl)
+                                                    $ ok = bool(persistent.unlock_all_routes or is_ending_cleared(p_var, seen_lbl))
                                                     frame:
                                                         xsize 234
                                                         ysize 36

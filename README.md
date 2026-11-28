@@ -38,10 +38,10 @@
 
 ## 玩家使用方式（推荐）
 
-从 [Releases 最新版](https://github.com/En-nagakiro/BlueGlassHD/releases/latest) 下载 `BlueGlassHD-2.0.2-win-BYOA.zip`（提供 `.sha256` 校验文件）并解压，根目录结构如下：
+从 [Releases 最新版](https://github.com/En-nagakiro/BlueGlassHD/releases/latest) 下载 `BlueGlassHD-2.0.3-win-BYOA.zip`（提供 `.sha256` 校验文件）并解压，根目录结构如下：
 
 ```text
-BlueGlassHD-2.0.2-win/
+BlueGlassHD-2.0.3-win/
 ├── BlueGlassHD.exe          # 游戏主程序
 ├── BYOA_Importer.exe        # 图形资源导入工具（中/英双语）
 ├── game/                    # 开源引擎与 OFL/IPA 字库
@@ -64,7 +64,7 @@ BlueGlassHD-2.0.2-win/
 1. 前往官方页面 [xinntao/Real-ESRGAN v0.2.5.0](https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0) 下载 `realesrgan-ncnn-vulkan-20220424-windows.zip`。
 2. 将压缩包内的 `realesrgan-ncnn-vulkan.exe` 与 `models/` 目录放入解压后的 `tools/realesrgan/` 路径（即 `BYOA_Importer.exe` 同级的 `tools\realesrgan\`）：
    ```text
-   BlueGlassHD-2.0.2-win/
+   BlueGlassHD-2.0.3-win/
    ├── BYOA_Importer.exe
    └── tools/
        └── realesrgan/

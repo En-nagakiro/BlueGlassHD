@@ -57,6 +57,22 @@ BlueGlassHD-2.0.2-win/
 3. 点击右下角「开始导入」（极速模式约 10 秒完成；若本地配有 Vulkan `realesrgan-ncnn-vulkan`，可选 AI 4× 超分模式）。
 4. 导入完成后点击「启动游戏」（或直接双击 `BlueGlassHD.exe`）。
 
+### 可选：启用 AI 4× 超分（需支持 Vulkan 的显卡）
+
+为控制发行包体积并保证无独立显卡设备开箱即用，发行包默认未内置超分工具。如需开启 AI 4× 超分（`realesrgan-x4plus-anime`）：
+
+1. 前往官方页面 [xinntao/Real-ESRGAN v0.2.5.0](https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0) 下载 `realesrgan-ncnn-vulkan-20220424-windows.zip`。
+2. 将压缩包内的 `realesrgan-ncnn-vulkan.exe` 与 `models/` 目录放入解压后的 `tools/realesrgan/` 路径（即 `BYOA_Importer.exe` 同级的 `tools\realesrgan\`）：
+   ```text
+   BlueGlassHD-2.0.2-win/
+   ├── BYOA_Importer.exe
+   └── tools/
+       └── realesrgan/
+           ├── realesrgan-ncnn-vulkan.exe
+           └── models/
+   ```
+3. 重新打开 `BYOA_Importer.exe`，画质栏中的「AI 4× 超分」即可勾选使用（也可以将工具目录加入系统 `PATH`）。
+
 ---
 
 ## 开发者构建与校验

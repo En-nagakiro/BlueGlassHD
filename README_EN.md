@@ -57,6 +57,22 @@ BlueGlassHD-2.0.2-win/
 3. Click **Start Import** at the bottom right (~10 seconds in CPU Fast Mode; optional 4× Vulkan AI upscaling if `realesrgan-ncnn-vulkan` is installed).
 4. Click **Launch Game** (or run `BlueGlassHD.exe`).
 
+### Optional: Enable 4× AI Upscaling (Vulkan GPU)
+
+The release archive omits the upscaler binary to stay compact and work out of the box on systems without Vulkan GPUs. To enable 4× AI upscaling (`realesrgan-x4plus-anime`):
+
+1. Download `realesrgan-ncnn-vulkan-20220424-windows.zip` from the official [xinntao/Real-ESRGAN v0.2.5.0](https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0) release.
+2. Extract `realesrgan-ncnn-vulkan.exe` and its `models/` folder into `tools/realesrgan/` next to `BYOA_Importer.exe`:
+   ```text
+   BlueGlassHD-2.0.2-win/
+   ├── BYOA_Importer.exe
+   └── tools/
+       └── realesrgan/
+           ├── realesrgan-ncnn-vulkan.exe
+           └── models/
+   ```
+3. Relaunch `BYOA_Importer.exe` to unlock the **AI 4× Upscale** option (or place `realesrgan-ncnn-vulkan` on your system `PATH`).
+
 ---
 
 ## Developer Build & Verification

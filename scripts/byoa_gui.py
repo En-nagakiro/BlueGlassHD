@@ -25,7 +25,7 @@ import urllib.request
 import urllib.error
 import json
 
-APP_VERSION = "2.0.1"
+APP_VERSION = "2.0.2"
 OFFICIAL_GITHUB_URL = "https://github.com/En-nagakiro/BlueGlassHD"
 OFFICIAL_RELEASES_URL = "https://github.com/En-nagakiro/BlueGlassHD/releases"
 OFFICIAL_BILIBILI_URL = "https://space.bilibili.com/1601243445"

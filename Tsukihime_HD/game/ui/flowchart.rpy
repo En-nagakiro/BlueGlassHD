@@ -52,7 +52,7 @@ init -2 python:
             "thumb": "images/bg/bg_01b.webp", "cast": "远野志贵、弓塚五月",
             "desc": "放学走出校门，在斜阳笼罩的十字路口偶遇同班同学弓塚五月，开启前往远野宅邸的归途。",
             "branch_info": "提升五月伏笔（flg6）并衔接到远野本家正门。",
-            "preset": {},
+            "preset": {"akiha_regard": 2},
         },
         {
             "id": "com_04", "cat": "common", "day": "DAY 01 · 远野宅邸",
@@ -60,8 +60,8 @@ init -2 python:
             "seen_label": "s41", "branch_label": "f41", "mode": "continue",
             "thumb": "images/bg/bg_32b.webp", "cast": "远野志贵、翡翠、琥珀、远野秋叶",
             "desc": "登上坡道来到宏伟森严的远野宅邸，重逢当家妹妹秋叶与双子侍女翡翠、琥珀。",
-            "branch_info": "远野本家篇开端 · 晚饭后决定夜间行动与表里线分水岭。",
-            "preset": {"flg6": 1},
+            "branch_info": "远野本家篇开端 · 晚饭后决定夜间行动与表里线分水岭（保留秋叶/翡翠分支）。",
+            "preset": {"akiha_regard": 2, "hisui_regard": 2, "flg6": 1},
         },
         {
             "id": "com_05", "cat": "common", "day": "DAY 01 · 深夜分水岭",
@@ -69,8 +69,8 @@ init -2 python:
             "seen_label": "s46", "branch_label": "f46", "mode": "continue",
             "thumb": "images/bg/bg_40d.webp", "cast": "远野志贵",
             "desc": "宅邸的第一夜，窗外传来异样的犬吠与骚动。是否推门出去确认情形，将把命运彻底劈开为「表线」与「里线」。",
-            "branch_info": "核心分水岭 ·【去看看情形】进表线（爱尔奎特/希耶尔），【老实睡觉】进里线（表线通关后开放）。",
-            "preset": {"flg6": 1},
+            "branch_info": "核心分水岭 ·【去看看情形】进爱尔奎特线，【老实睡觉】默认进秋叶线（表线通关后开放；翡翠/琥珀/希耶尔需从前序分支进入）。",
+            "preset": {"akiha_regard": 3, "flg6": 1},
         },
         {
             "id": "com_06", "cat": "common", "day": "DAY 02 · 表线序幕",
@@ -79,7 +79,7 @@ init -2 python:
             "thumb": "images/bg/bg_22b.webp", "cast": "远野志贵、爱尔奎特",
             "desc": "梦中回想起青子老师关于「线」的教诲。表线第二日的学园日常背后，决定命运的邂逅正悄然逼近。",
             "branch_info": "表线第二日入口 · 通往第五节课后的商业街十七分割（保留进入爱尔奎特/希耶尔双线条件）。",
-            "preset": {"ark_regard": 3, "ciel_regard": 2, "flg6": 1},
+            "preset": {"ark_regard": 3, "ciel_regard": 3},
         },
         {
             "id": "com_07", "cat": "common", "day": "DAY 02 · 十七分割",
@@ -88,7 +88,7 @@ init -2 python:
             "thumb": "images/cg/ark_e01.webp", "cast": "远野志贵、爱尔奎特",
             "desc": "第五节古文课的窗外落下一只乌鸦。早退步入商业街的志贵，在金发白衣少女擦肩的瞬间被不可遏制的杀意彻底吞噬。",
             "branch_info": "《月姬》表线最震撼的核心引爆点。",
-            "preset": {"ark_regard": 3, "ciel_regard": 2, "flg6": 1},
+            "preset": {"ark_regard": 3, "ciel_regard": 3},
         },
 
         # --- 表线 · 爱尔奎特线 (ARCUEID ROUTE) ---
@@ -99,7 +99,7 @@ init -2 python:
             "thumb": "images/bg/bg_20a.webp", "cast": "远野志贵、爱尔奎特",
             "desc": "从血腥噩梦般的昏沉中醒来，雨已停歇。在通往街区的道路上，本已被十七分割的少女正含笑迎面走来。",
             "branch_info": "爱尔奎特线第三日主干 · 真祖问责与护卫同盟开端。",
-            "preset": {"ark_regard": 4, "flg6": 1},
+            "preset": {"ark_regard": 3, "flg6": 1},
         },
         {
             "id": "arc_02", "cat": "arc", "day": "DAY 03 · 血之誓约",
@@ -108,7 +108,7 @@ init -2 python:
             "thumb": "images/bg/bg_19b.webp", "cast": "远野志贵、爱尔奎特",
             "desc": "既已许下约定便不能反悔。志贵守候在苍白沉睡的爱尔奎特身旁，而二十七祖尼禄·卡欧斯的黑兽已在夜幕中包围酒店。",
             "branch_info": "表线决战前夕 · 切勿在后续选择回家逃避。",
-            "preset": {"ark_regard": 5, "flg6": 1},
+            "preset": {"ark_regard": 4, "flg6": 1},
         },
         {
             "id": "arc_03", "cat": "arc", "day": "DAY 03 · 死斗",
@@ -117,7 +117,7 @@ init -2 python:
             "thumb": "images/cg/nero_e04.webp", "cast": "远野志贵、爱尔奎特、尼禄·卡欧斯",
             "desc": "回想起老师的话语，志贵抛开迷惘决定留在爱尔奎特身边，向拥有六百六十六只魔兽的死徒尼禄·卡欧斯发起殊死反击。",
             "branch_info": "尼禄·卡欧斯决战核心段。",
-            "preset": {"ark_regard": 6, "flg6": 1},
+            "preset": {"ark_regard": 3, "flg6": 1},
         },
         {
             "id": "arc_04", "cat": "arc", "day": "DAY 04 · 同行",
@@ -126,7 +126,7 @@ init -2 python:
             "thumb": "images/bg/bg_28b.webp", "cast": "远野志贵、爱尔奎特",
             "desc": "清晨在爱尔奎特的酒店房间醒来，两人开始正式联手追查潜伏在三咲町的「蛇」——转生无限者罗阿。",
             "branch_info": "第三日酒店决战延续 · 通往第四日爱尔奎特线（需提前触发第三日街头相遇旗标 flg2 才会转向希耶尔线）。",
-            "preset": {"ark_regard": 7, "flg6": 1},
+            "preset": {"ark_regard": 5, "flg6": 1},
         },
         {
             "id": "arc_05", "cat": "arc", "day": "DAY 05 · 约会前奏",
@@ -135,7 +135,7 @@ init -2 python:
             "thumb": "images/bg/bg_33d.webp", "cast": "远野志贵、爱尔奎特",
             "desc": "在远野家感受着清晨阳光醒来。围绕爱尔奎特的秘密与罗阿的线索逐渐明朗。",
             "branch_info": "爱尔奎特线第五日主干。",
-            "preset": {"ark_regard": 8, "flg6": 1},
+            "preset": {"ark_regard": 6, "flg6": 1},
         },
         {
             "id": "arc_06", "cat": "arc", "day": "DAY 07 · 回忆之庭",
@@ -162,7 +162,7 @@ init -2 python:
             "thumb": "images/bg/cmo_14.webp", "cast": "远野志贵、爱尔奎特、希耶尔、罗阿",
             "desc": "被翡翠唤醒后的最终之日。所有的因果与死线都汇聚于月夜校舍。",
             "branch_info": "爱尔奎特线最终高潮，直通结局分歧。",
-            "preset": {"ark_regard": 14, "flg6": 1},
+            "preset": {"ark_regard": 16, "flg6": 1},
         },
         {
             "id": "arc_09", "cat": "arc", "day": "EPILOGUE · TRUE END",
@@ -171,7 +171,7 @@ init -2 python:
             "thumb": "images/cg/ark_e10.webp", "cast": "远野志贵、爱尔奎特",
             "desc": "罗阿伏诛，深秋步入尾声。在燃烧般的黄昏教室里，少年静静履行承诺，仰望那轮永不褪色的苍蓝明月直到天明。",
             "branch_info": "爱尔奎特正史真结局（连播 s52 前奏 + s52a 终章 + ED 演职员表）。",
-            "preset": {"ark_regard": 15},
+            "preset": {"ark_regard": 19},
         },
         {
             "id": "arc_10", "cat": "arc", "day": "EPILOGUE · GOOD END",
@@ -180,7 +180,7 @@ init -2 python:
             "thumb": "images/cg/ark_e02.webp", "cast": "远野志贵、爱尔奎特",
             "desc": "无法忘记那个金发少女的约定。在澄澈无云的苍空下，跨越了永眠宿命的两人再度牵起双手，迈向未知的新天地。",
             "branch_info": "爱尔奎特二周目好结局（连播 s53 前奏 + s53a 终章 + ED）。",
-            "preset": {"ark_regard": 15},
+            "preset": {"ark_regard": 19},
         },
 
         # --- 表线 · 希耶尔线 (CIEL ROUTE) ---
@@ -191,7 +191,7 @@ init -2 python:
             "thumb": "images/cg/cel_e02a.webp", "cast": "远野志贵、希耶尔",
             "desc": "正式踏入希耶尔个人线。温和亲切的三年级学姐背后，埋藏着圣堂教会埋葬机关代行者的沉重身份。",
             "branch_info": "希耶尔线第五日正式入口（含 flgE 路线旗标）。",
-            "preset": {"ciel_regard": 7, "flgE": 1, "flg6": 1},
+            "preset": {"ciel_regard": 6, "flg2": 1},
         },
         {
             "id": "ciel_02", "cat": "ciel", "day": "DAY 07 · 灼热之雨",
@@ -200,7 +200,7 @@ init -2 python:
             "thumb": "images/cg/cel_e03a.webp", "cast": "远野志贵、希耶尔、爱尔奎特",
             "desc": "灼热的雨中梦境与纷乱的情感。希耶尔与爱尔奎特的对立逐渐浮出水面，志贵直面学姐深藏心底的罪业。",
             "branch_info": "希耶尔线第七日主线入口。",
-            "preset": {"ciel_regard": 11, "flgE": 1, "flg6": 1},
+            "preset": {"ciel_regard": 11, "flgE": 1, "flg2": 1},
         },
         {
             "id": "ciel_03", "cat": "ciel", "day": "DAY 09 · 阴暗八年",
@@ -209,7 +209,7 @@ init -2 python:
             "thumb": "images/cg/cel_e05a.webp", "cast": "远野志贵、希耶尔",
             "desc": "潜藏在黑暗角落八年的罗阿宿魂开始侵蚀志贵。希耶尔举起第七圣典，踏上赎罪与斩断轮回的战场。",
             "branch_info": "希耶尔线第九日高潮开篇。",
-            "preset": {"ciel_regard": 11, "flgE": 1, "flg6": 1},
+            "preset": {"ciel_regard": 11, "flgE": 1, "flg2": 1},
         },
         {
             "id": "ciel_04", "cat": "ciel", "day": "DAY 10 · 惊醒",
@@ -218,7 +218,7 @@ init -2 python:
             "thumb": "images/cg/cel_e07a.webp", "cast": "远野志贵、希耶尔、爱尔奎特",
             "desc": "如弹簧人偶般从梦魇中惊醒，体内的罗阿人格日益狂暴。校园与夜街之上，三人的宿命走向终局对撞。",
             "branch_info": "希耶尔线第十日，直通最终日决战。",
-            "preset": {"ciel_regard": 12, "flgE": 1, "flg6": 1},
+            "preset": {"ciel_regard": 12, "flgE": 1, "flg2": 1},
         },
         {
             "id": "ciel_05", "cat": "ciel", "day": "DAY 12 · 黎明前夕",
@@ -227,7 +227,7 @@ init -2 python:
             "thumb": "images/cg/cel_e08.webp", "cast": "远野志贵、希耶尔、爱尔奎特",
             "desc": "希耶尔不辞而别，房间骤然空荡。为了终结一切悲剧，志贵追向等待着最终审判的战地。",
             "branch_info": "希耶尔线最终日入口，根据好感与选择进入 TRUE / GOOD 双结局。",
-            "preset": {"ciel_regard": 14, "flgE": 1, "flg6": 1},
+            "preset": {"ciel_regard": 14, "flgE": 1, "flg2": 1},
         },
         {
             "id": "ciel_06", "cat": "ciel", "day": "EPILOGUE · TRUE END",
@@ -236,7 +236,7 @@ init -2 python:
             "thumb": "images/cg/cel_e09.webp", "cast": "远野志贵、希耶尔",
             "desc": "斩断诅咒与不死的轮回，不再被黑夜与罪恶束缚。沐浴在久违的温暖日光下，两人迎来了真正属于彼此的明天。",
             "branch_info": "希耶尔线真结局（含完整终章与 ED）。",
-            "preset": {"ciel_regard": 15, "flgE": 1},
+            "preset": {"ciel_regard": 14, "flgE": 1},
         },
         {
             "id": "ciel_07", "cat": "ciel", "day": "EPILOGUE · GOOD END",
@@ -245,7 +245,7 @@ init -2 python:
             "thumb": "images/cg/cel_f02.webp", "cast": "远野志贵、希耶尔、爱尔奎特",
             "desc": "谁都不愿放手的奇迹结局。学姐与吸血姬围绕着志贵展开喧闹又温馨的奇妙日常，往复不止。",
             "branch_info": "希耶尔线经典后宫喜剧好结局（含完整终章与 ED）。",
-            "preset": {"ciel_regard": 15, "flgE": 1},
+            "preset": {"ciel_regard": 14, "flgE": 1},
         },
 
         # --- 里线 · 秋叶线 (AKIHA ROUTE) ---
@@ -256,7 +256,7 @@ init -2 python:
             "thumb": "images/bg/bg_40d.webp", "cast": "远野志贵、远野秋叶",
             "desc": "选择留在床上无视窗外犬吠，没有遇见真祖的志贵，由此踏入远野宅邸尘封八年的禁忌与血脉暗面。",
             "branch_info": "秋叶向里线起始节点。",
-            "preset": {"akiha_regard": 4, "flg6": 1},
+            "preset": {"akiha_regard": 3, "flg6": 1},
         },
         {
             "id": "aki_02", "cat": "akiha", "day": "DAY 03 · 盛夏幻影",
@@ -265,7 +265,7 @@ init -2 python:
             "thumb": "images/bg/cmo_19.webp", "cast": "远野志贵、远野秋叶、弓塚五月",
             "desc": "遥远酷暑的蝉鸣回忆掠过脑海。里线第三日，悄然蔓延的吸血怪异正步步逼近身边的同班少女弓塚五月。",
             "branch_info": "里线第三日主干 · 弓塚悲剧与宅邸谜团展开。",
-            "preset": {"akiha_regard": 5, "flgP": 1, "flg6": 1},
+            "preset": {"akiha_regard": 4, "flgP": 1, "flg6": 1},
         },
         {
             "id": "aki_03", "cat": "akiha", "day": "DAY 04 · 茜之兆",
@@ -274,7 +274,7 @@ init -2 python:
             "thumb": "images/cg/aki_e01.webp", "cast": "远野志贵、远野秋叶",
             "desc": "在强光下睁开双眼。作为远野家当代家主的妹妹秋叶，高傲冷静的外表之下隐藏着以红发为代价的血脉诅咒。",
             "branch_info": "秋叶线第四日关键篇章。",
-            "preset": {"akiha_regard": 7, "flgP": 1, "flg6": 1},
+            "preset": {"akiha_regard": 5, "flgP": 1, "flg6": 1},
         },
         {
             "id": "aki_04", "cat": "akiha", "day": "DAY 05 · 剧痛苏醒",
@@ -283,7 +283,7 @@ init -2 python:
             "thumb": "images/cg/aki_e03.webp", "cast": "远野志贵、远野秋叶",
             "desc": "伴随剧痛在清晨苏醒，志贵正式锁定秋叶个人线。兄妹之间跨越八年时光的羁绊与远野家狂血开始正面交锋。",
             "branch_info": "秋叶个人线正式分支起点（f325）。",
-            "preset": {"akiha_regard": 9, "flgP": 1, "flg6": 1},
+            "preset": {"akiha_regard": 6, "flgP": 1, "flg6": 1},
         },
         {
             "id": "aki_05", "cat": "akiha", "day": "DAY 08 · 红发掠夺",
@@ -292,7 +292,7 @@ init -2 python:
             "thumb": "images/cg/aki_e09.webp", "cast": "远野志贵、远野秋叶",
             "desc": "淡薄晨光中醒来，历经贫血与动荡的志贵愈发靠近秋叶拼命隐瞒的「槛发」真相与生命共享的秘密。",
             "branch_info": "秋叶线第八日核心情感章。",
-            "preset": {"akiha_regard": 11, "flgP": 1, "flg6": 1},
+            "preset": {"akiha_regard": 8, "flgP": 1, "flg6": 1},
         },
         {
             "id": "aki_06", "cat": "akiha", "day": "DAY 10 · 庭院丝带",
@@ -301,7 +301,7 @@ init -2 python:
             "thumb": "images/bg/cmo_20.webp", "cast": "远野志贵、远野秋叶、远野四季",
             "desc": "无人的庭院里，幼年秋叶泣不成声地道歉。被替换的兄长身份、产土神之血与地下牢狱的真相彻底揭晓。",
             "branch_info": "秋叶线第十日真相揭露章。",
-            "preset": {"akiha_regard": 12, "flgP": 1, "flg6": 1},
+            "preset": {"akiha_regard": 10, "flgP": 1, "flg6": 1},
         },
         {
             "id": "aki_07", "cat": "akiha", "day": "DAY 12 · 最终夜",
@@ -310,7 +310,7 @@ init -2 python:
             "thumb": "images/cg/aki_e07a.webp", "cast": "远野志贵、远野秋叶、远野四季",
             "desc": "在梦中窥见了属于远野四季的残酷往事。面临彻底红赤化的秋叶，志贵必须做出最惨烈也最温柔的抉择。",
             "branch_info": "秋叶线最终决战入口，通向 TRUE / GOOD 双结局。",
-            "preset": {"akiha_regard": 14, "flgP": 1, "flg6": 1},
+            "preset": {"akiha_regard": 11, "flgP": 1, "flg6": 1},
         },
         {
             "id": "aki_08", "cat": "akiha", "day": "EPILOGUE · TRUE END",
@@ -319,7 +319,7 @@ init -2 python:
             "thumb": "images/cg/aki_f02.webp", "cast": "远野志贵、远野秋叶",
             "desc": "死亡绝非救赎。将一半生命归还给妹妹后，秋叶独自站在坡道洋馆前，坚信兄长终会归来，永远等待下去。",
             "branch_info": "秋叶线催泪真结局（含完整终章与 ED）。",
-            "preset": {"akiha_regard": 15, "flgP": 1},
+            "preset": {"akiha_regard": 12, "flgP": 1},
         },
         {
             "id": "aki_09", "cat": "akiha", "day": "EPILOGUE · NORMAL END",
@@ -328,7 +328,7 @@ init -2 python:
             "thumb": "images/cg/aki_e08.webp", "cast": "远野志贵、远野秋叶",
             "desc": "为了有一天当秋叶再度睁开双眼时，能够用一句稀松平常的「嗨」去迎接她，少年选择带着希望继续活下去。",
             "branch_info": "秋叶线普通结局（原版官方定名 Normal End，含完整终章、ED 与知得留授课）。",
-            "preset": {"akiha_regard": 15, "flgP": 1},
+            "preset": {"akiha_regard": 12, "flgP": 1},
         },
 
         # --- 里线 · 翡翠线 (HISUI ROUTE) ---
@@ -339,7 +339,7 @@ init -2 python:
             "thumb": "images/cg/his_e01.webp", "cast": "远野志贵、翡翠",
             "desc": "推开沉重的铁门回到宅邸。总是一丝不苟、沉默克制的专属侍女翡翠，眼神深处似乎始终藏着无法言说的秘密。",
             "branch_info": "翡翠线前期核心节点。",
-            "preset": {"hisui_regard": 6, "flg6": 1},
+            "preset": {"hisui_regard": 4, "akiha_regard": 1, "flg6": 1},
         },
         {
             "id": "his_02", "cat": "hisui", "day": "DAY 05 · 欢迎酒宴",
@@ -348,7 +348,7 @@ init -2 python:
             "thumb": "images/cg/his_e02.webp", "cast": "远野志贵、翡翠、琥珀、远野秋叶",
             "desc": "客厅里的欢迎会演变成酒宴，不胜酒力的翡翠渐渐露出罕见的破绽。自此正式锁定翡翠个人线。",
             "branch_info": "翡翠个人线锁定节点（f323）。",
-            "preset": {"hisui_regard": 8, "flg6": 1},
+            "preset": {"hisui_regard": 3, "akiha_regard": 1, "flg6": 1},
         },
         {
             "id": "his_03", "cat": "hisui", "day": "DAY 07 · 深陷梦魇",
@@ -357,7 +357,7 @@ init -2 python:
             "thumb": "images/cg/his_e04.webp", "cast": "远野志贵、翡翠",
             "desc": "身体日益衰弱、被困于暗黑噩梦中的志贵，逐渐发觉宅邸内的异样与自身记忆深处致命的违和感。",
             "branch_info": "翡翠线中盘悬疑高潮（幽闭期开端）。",
-            "preset": {"hisui_regard": 10, "flg6": 1},
+            "preset": {"hisui_regard": 4, "akiha_regard": 1, "flg6": 1},
         },
         {
             "id": "his_04", "cat": "hisui", "day": "DAY 08 · 暗流",
@@ -366,7 +366,7 @@ init -2 python:
             "thumb": "images/cg/his_e08.webp", "cast": "远野志贵、翡翠、琥珀、远野秋叶",
             "desc": "客厅中看似平静的红茶时光背后，精神与肉体同步走向失控。双子侍女长达八年的命运轮盘开始加速旋转。",
             "branch_info": "翡翠线最核心的长篇转折章（共逾千句完整剧情）。",
-            "preset": {"hisui_regard": 11, "flg6": 1},
+            "preset": {"hisui_regard": 6, "akiha_regard": 1, "flg6": 1},
         },
         {
             "id": "his_05", "cat": "hisui", "day": "DAY 13 · 敲门声",
@@ -375,7 +375,7 @@ init -2 python:
             "thumb": "images/cg/his_e06.webp", "cast": "远野志贵、翡翠、琥珀、远野四季",
             "desc": "咚、咚咚、咚。打破幽闭的敲门声响起，《月姬》全篇最具冲击力的双子互换真相与最终对决拉开帷幕。",
             "branch_info": "翡翠线最终章入口，直通 TRUE / GOOD 双结局。",
-            "preset": {"hisui_regard": 14, "flg6": 1},
+            "preset": {"hisui_regard": 7, "akiha_regard": 1, "flg6": 1},
         },
         {
             "id": "his_06", "cat": "hisui", "day": "EPILOGUE · TRUE END",
@@ -384,7 +384,7 @@ init -2 python:
             "thumb": "images/cg/his_f03.webp", "cast": "远野志贵、翡翠、琥珀",
             "desc": "在所有谎言与复仇尘埃落定后，翡翠终于卸下八年的重担。这也是全作最深沉震撼、解开琥珀线前置锁的终局。",
             "branch_info": "翡翠线真结局（通关后永久解锁琥珀线入口！）。",
-            "preset": {"hisui_regard": 15},
+            "preset": {"hisui_regard": 7},
         },
         {
             "id": "his_07", "cat": "hisui", "day": "EPILOGUE · GOOD END",
@@ -393,7 +393,7 @@ init -2 python:
             "thumb": "images/cg/his_e09.webp", "cast": "远野志贵、翡翠、琥珀",
             "desc": "千钧一发之际呼喊出那个名字，挽回了无法替代的羁绊。紧握翡翠的双手，无悔地向着微光继续前行。",
             "branch_info": "翡翠线二周目好结局（含完整终章与 ED）。",
-            "preset": {"hisui_regard": 15},
+            "preset": {"hisui_regard": 7},
         },
 
         # --- 里线 · 琥珀线 (KOHAKU ROUTE) ---
@@ -404,7 +404,7 @@ init -2 python:
             "thumb": "images/cg/koha_e01a.webp", "cast": "远野志贵、琥珀",
             "desc": "通关翡翠线后方可踏入的隐藏终线。总是带着灿烂笑容操持宅邸的琥珀，内里却藏着无人触及的空洞与创伤。",
             "branch_info": "琥珀线正式分岐起点（f324 → f416）。",
-            "preset": {"kohaku_regard": 9, "flg6": 1},
+            "preset": {"kohaku_regard": 4, "flg6": 1},
         },
         {
             "id": "koh_02", "cat": "kohaku", "day": "DAY 05 · 异变初现",
@@ -413,7 +413,7 @@ init -2 python:
             "thumb": "images/cg/koha_e03.webp", "cast": "远野志贵、琥珀",
             "desc": "背脊残留着被压迫般的剧痛独自醒来。在阳光洒落的日本庭院里，志贵一步步走近琥珀尘封的真实心声。",
             "branch_info": "琥珀线第五日核心篇章。",
-            "preset": {"kohaku_regard": 10, "flg6": 1},
+            "preset": {"kohaku_regard": 4, "flg6": 1},
         },
         {
             "id": "koh_03", "cat": "kohaku", "day": "DAY 07 · 探寻真相",
@@ -422,7 +422,7 @@ init -2 python:
             "thumb": "images/cg/koha_e04.webp", "cast": "远野志贵、琥珀",
             "desc": "决定直接找琥珀问清宅邸隐藏的一切。微笑的人偶第一次露出了属于真正人类的颤抖与悲哀。",
             "branch_info": "琥珀线第七日主线。",
-            "preset": {"kohaku_regard": 11, "flg6": 1},
+            "preset": {"kohaku_regard": 5, "flg6": 1},
         },
         {
             "id": "koh_04", "cat": "kohaku", "day": "DAY 09 · 心跳声",
@@ -431,7 +431,7 @@ init -2 python:
             "thumb": "images/cg/koha_e06.webp", "cast": "远野志贵、琥珀、远野秋叶",
             "desc": "沉重的心跳声回荡耳际，失控的狂血与远野家的最终清算已迫在眉睫。",
             "branch_info": "琥珀线第九日高潮。",
-            "preset": {"kohaku_regard": 13, "flg6": 1},
+            "preset": {"kohaku_regard": 5, "flg6": 1},
         },
         {
             "id": "koh_05", "cat": "kohaku", "day": "DAY 11 · 决意",
@@ -440,7 +440,7 @@ init -2 python:
             "thumb": "images/cg/koha_e08.webp", "cast": "远野志贵、琥珀、远野秋叶",
             "desc": "哪怕身体已达极限，志贵仍下定决心直面红赤化的秋叶，替一直独自承受地狱的琥珀斩断过往枷锁。",
             "branch_info": "琥珀线最终战前夕（注意此处含致命选项分歧）。",
-            "preset": {"kohaku_regard": 14, "flg6": 1},
+            "preset": {"kohaku_regard": 5, "flg6": 1},
         },
         {
             "id": "koh_06", "cat": "kohaku", "day": "EPILOGUE · TRUE END",
@@ -449,7 +449,7 @@ init -2 python:
             "thumb": "images/cg/koha_f03.webp", "cast": "远野志贵、琥珀、翡翠、远野秋叶",
             "desc": "「欢迎回来。这次，就真的完成小时候的约定了。」全作五线最终的救赎，绽放在满园向阳花海之中。",
             "branch_info": "琥珀线唯一真结局（含完整终章与 ED）。",
-            "preset": {"kohaku_regard": 15},
+            "preset": {"kohaku_regard": 5},
         },
 
         # --- 知得留课堂与尾声月蚀 (DOJOS & ECLIPSE) ---

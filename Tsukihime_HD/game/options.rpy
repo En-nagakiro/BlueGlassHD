@@ -9,7 +9,7 @@ init -1 python:
 init -1:
     define config.name = _("月姬 ～Classic HD～")
     define gui.show_name = False
-    define config.version = "2.0.1"
+    define config.version = "2.0.2"
     define gui.about = _("非官方开源 BYOA 兼容引擎（MIT）")
     define build.name = "BlueGlassHD"
 

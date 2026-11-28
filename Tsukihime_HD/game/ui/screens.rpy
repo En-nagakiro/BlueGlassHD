@@ -44,6 +44,15 @@ init -1 python:
         ]),
     ]
 
+    # True per-heroine max achievable affection & warm-portrait threshold from 0.txt
+    HEROINE_AFFECTION_SPEC = {
+        "ark_regard":    (19, 8),
+        "ciel_regard":   (14, 6),
+        "akiha_regard":  (12, 5),
+        "hisui_regard":  (7,  4),
+        "kohaku_regard": (5,  3),
+    }
+
     def get_heroine_affection(var_name):
         try:
             return max(0, int(getattr(store, var_name, 0)))
@@ -1427,9 +1436,10 @@ screen preferences():
                             spacing 28
                             for hkey, hzh, hen, hvar, hcol, hends in NEAR_HEROINE_PROFILES:
                                 $ hval = 0 if main_menu else get_heroine_affection(hvar)
+                                $ hmax, hwarm = HEROINE_AFFECTION_SPEC.get(hvar, (15, 6))
                                 $ any_clr = any(is_ending_cleared(pv, sl) for pv, sl, _, _ in hends)
-                                $ p_img = f"gui/portraits/{hkey}_warm.png" if (hval >= 6 or any_clr) else f"gui/portraits/{hkey}_norm.png"
-                                $ bar_w = int(round(396 * min(1.0, hval / 15.0)))
+                                $ p_img = f"gui/portraits/{hkey}_warm.png" if (hval >= hwarm or any_clr) else f"gui/portraits/{hkey}_norm.png"
+                                $ bar_w = int(round(396 * min(1.0, hval / float(hmax))))
 
                                 frame:
                                     xsize 708
@@ -1466,7 +1476,7 @@ screen preferences():
                                                 hbox:
                                                     xfill True
                                                     text ui_tr("当前好感度", "Affection") size 13 color "#8b9db2" font "fonts/lxgw_xihei.ttf"
-                                                    text (f"{hval} / 15" if not main_menu else ui_tr("未入周目", "In Menu")) size 12 color "#76899e" font "fonts/lxgw_xihei.ttf" xalign 1.0
+                                                    text (f"{hval} / {hmax}" if not main_menu else ui_tr("未入周目", "In Menu")) size 12 color "#76899e" font "fonts/lxgw_xihei.ttf" xalign 1.0
                                                 fixed:
                                                     xsize 396
                                                     ysize 10
@@ -1503,9 +1513,10 @@ screen preferences():
                             spacing 23
                             for hkey, hzh, hen, hvar, hcol, hends in FAR_HEROINE_PROFILES:
                                 $ hval = 0 if main_menu else get_heroine_affection(hvar)
+                                $ hmax, hwarm = HEROINE_AFFECTION_SPEC.get(hvar, (15, 6))
                                 $ any_clr = any(is_ending_cleared(pv, sl) for pv, sl, _, _ in hends)
-                                $ p_img = f"gui/portraits/{hkey}_warm.png" if (hval >= 6 or any_clr) else f"gui/portraits/{hkey}_norm.png"
-                                $ bar_w = int(round(234 * min(1.0, hval / 15.0)))
+                                $ p_img = f"gui/portraits/{hkey}_warm.png" if (hval >= hwarm or any_clr) else f"gui/portraits/{hkey}_norm.png"
+                                $ bar_w = int(round(234 * min(1.0, hval / float(hmax))))
 
                                 frame:
                                     xsize 466
@@ -1538,7 +1549,7 @@ screen preferences():
                                                 spacing 8
                                                 hbox:
                                                     xfill True
-                                                    text ui_tr("好感度", "Affection") size 13 color "#8b9db2" font "fonts/lxgw_xihei.ttf" yalign 0.65
+                                                    text ui_tr(f"好感度 /{hmax}", f"Affection /{hmax}") size 13 color "#8b9db2" font "fonts/lxgw_xihei.ttf" yalign 0.65
                                                     text (f"{hval:02d}" if not main_menu else "—") size 36 color hcol font "fonts/lxgw_xihei_screen.ttf" xalign 1.0 yalign 0.5
                                                 fixed:
                                                     xsize 234

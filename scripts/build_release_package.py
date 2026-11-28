@@ -66,7 +66,7 @@ def verify_zero_copyright_leaks(pkg_root):
 
 
 def main():
-    # 1. Verify open-source repo compliance first
+    # 1. Verify open-source repo compliance & version sync (options.rpy / byoa_gui.py / READMEs) first
     r = subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "verify_project.py"), "--compliance-audit"], encoding="utf-8", errors="replace")
     if r.returncode != 0:
         sys.exit(r.returncode)

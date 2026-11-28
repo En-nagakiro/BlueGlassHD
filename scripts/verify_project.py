@@ -10,6 +10,10 @@ Verifies:
   5. 100% of Gallery CGs exist on disk and are wired to seen_cgs / renpy.seen_image.
   6. Zero missing-glyph tofu boxes across all UI screens using bundled static fonts.
   7. Runs official Ren'Py 8.5.3 `lint` and asserts exit code 0 + zero warnings/errors.
+  8. State-space reachability & affection audit: verifies all 9 endings, Flowchart
+     preset joint achievability, zero negative regards, and screens.rpy max caps.
+  --compliance-audit: also verifies open-source exclusions, font licenses, zero
+     hardcoded local paths, and version consistency across code & READMEs.
 """
 
 import os
@@ -18,6 +22,7 @@ import sys
 import glob
 import argparse
 import subprocess
+from collections import defaultdict, deque
 from PIL import ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,6 +33,284 @@ RENPY_EXE = os.path.join(ROOT, "tools", "renpy_sdk", "renpy-8.5.3-sdk", "renpy.e
 def read_text(p):
     with open(p, "r", encoding="utf-8") as f:
         return f.read()
+
+
+def check_version_sync():
+    """Verify release version matches across options.rpy, byoa_gui.py, README.md, and README_EN.md."""
+    issues = []
+    versions = {}
+
+    opt_p = os.path.join(DEFAULT_PROJ, "game", "options.rpy")
+    m_opt = re.search(r'define\s+config\.version\s*=\s*"([^"]+)"', read_text(opt_p))
+    if not m_opt:
+        issues.append("Could not locate config.version in Tsukihime_HD/game/options.rpy")
+    else:
+        versions["options.rpy"] = m_opt.group(1)
+
+    gui_p = os.path.join(ROOT, "scripts", "byoa_gui.py")
+    m_gui = re.search(r'APP_VERSION\s*=\s*"([^"]+)"', read_text(gui_p))
+    if not m_gui:
+        issues.append("Could not locate APP_VERSION in scripts/byoa_gui.py")
+    else:
+        versions["byoa_gui.py"] = m_gui.group(1)
+
+    for doc in ("README.md", "README_EN.md"):
+        doc_p = os.path.join(ROOT, doc)
+        txt = read_text(doc_p)
+        z_vers = set(re.findall(r"BlueGlassHD-(\d+\.\d+\.\d+)-win-BYOA\.zip", txt))
+        d_vers = set(re.findall(r"BlueGlassHD-(\d+\.\d+\.\d+)-win/", txt))
+        if len(z_vers) != 1 or len(d_vers) != 1 or z_vers != d_vers:
+            issues.append(f"{doc} has missing or inconsistent BlueGlassHD-* version strings: zip={sorted(z_vers)}, dir={sorted(d_vers)}")
+        else:
+            versions[doc] = next(iter(z_vers))
+
+    if len(set(versions.values())) > 1:
+        issues.append(f"Version mismatch across repo files: {versions}")
+    return issues
+
+
+def verify_state_space_and_affection(game_dir):
+    """Exact state-space reachability audit for endings, negative affection, UI caps, and Flowchart presets."""
+    regards = ["ark_regard", "ciel_regard", "akiha_regard", "hisui_regard", "kohaku_regard"]
+    story_files = sorted(glob.glob(os.path.join(game_dir, "story", "*.rpy")))
+    labels = {}
+    order = []
+    for fp in story_files:
+        cur = None
+        for raw in read_text(fp).splitlines():
+            m = re.match(r"^label\s+([A-Za-z0-9_]+)\s*:", raw)
+            if m:
+                cur = m.group(1)
+                order.append(cur)
+                labels[cur] = []
+                continue
+            if cur is not None:
+                labels[cur].append(raw)
+
+    def parse_ast(lines):
+        root = []
+        stack = [(-1, root)]
+        for raw in lines:
+            s = raw.strip()
+            if not s or s.startswith("#"):
+                continue
+            indent = len(raw) - len(raw.lstrip(" "))
+            node = [indent, s, []]
+            while stack and indent <= stack[-1][0]:
+                stack.pop()
+            stack[-1][1].append(node)
+            if s.endswith(":"):
+                stack.append((indent, node[2]))
+        return root
+
+    asts = {lbl: parse_ast(lines) for lbl, lines in labels.items()}
+    next_map = {order[i]: (order[i + 1] if i + 1 < len(order) else None) for i in range(len(order))}
+
+    direct_reads = {}
+    edges = {}
+    for lbl, tree in asts.items():
+        reads, succs = set(), set()
+        has_ft = True
+
+        def walk(nodes, top=False):
+            nonlocal has_ft
+            for _, s, ch in nodes:
+                if s.startswith("if ") or s.startswith("elif "):
+                    for m in re.finditer(r"\b(flg[A-Z0-9]|[a-z]+_regard)\b", s):
+                        reads.add(m.group(1))
+                elif s.startswith("jump "):
+                    succs.add(s[5:].strip())
+                    if top:
+                        has_ft = False
+                elif s == "return" and top:
+                    has_ft = False
+                walk(ch, False)
+
+        walk(tree, True)
+        if has_ft and next_map.get(lbl):
+            succs.add(next_map[lbl])
+        direct_reads[lbl] = reads
+        edges[lbl] = succs
+
+    live_in = {lbl: set(direct_reads[lbl]) for lbl in asts}
+    changed = True
+    while changed:
+        changed = False
+        for lbl in asts:
+            before = len(live_in[lbl])
+            for suc in edges.get(lbl, ()):
+                if suc in live_in:
+                    live_in[lbl] |= live_in[suc]
+            if len(live_in[lbl]) > before:
+                changed = True
+
+    def eval_cond(cond_str, st, pmode):
+        env = dict(st)
+        val = (pmode == "all_true")
+        for fn in ("can_enter_ark_good", "can_enter_cleared_branch", "can_enter_far_side", "can_enter_hisui_unlocked", "can_enter_kohaku"):
+            env[fn] = lambda v=val: v
+        return bool(eval(cond_str, {"__builtins__": {}}, env))
+
+    def step_stmts(stmts, st, pmode, fb):
+        def run_seq(seq, cur_st, idx_start=0):
+            res = []
+            i = idx_start
+            while i < len(seq):
+                _, s, children = seq[i]
+                if s.startswith("if "):
+                    branches = [(s[3:-1].strip(), children)]
+                    j = i + 1
+                    while j < len(seq) and (seq[j][1].startswith("elif ") or seq[j][1] == "else:"):
+                        branches.append((seq[j][1][5:-1].strip() if seq[j][1].startswith("elif ") else None, seq[j][2]))
+                        j += 1
+                    taken = False
+                    for bcond, bch in branches:
+                        if bcond is None or eval_cond(bcond, cur_st, pmode):
+                            taken = True
+                            for nxt, nst in run_seq(bch, dict(cur_st)):
+                                res.extend(run_seq(seq, nst, j) if nxt is None else [(nxt, nst)])
+                            break
+                    if not taken:
+                        res.extend(run_seq(seq, cur_st, j))
+                    return res
+                elif s == "menu:":
+                    for _, cs, cch in children:
+                        if cs.endswith(":"):
+                            for nxt, nst in run_seq(cch, dict(cur_st)):
+                                res.extend(run_seq(seq, nst, i + 1) if nxt is None else [(nxt, nst)])
+                    return res
+                elif s.startswith("jump "):
+                    res.append((s[5:].strip(), cur_st))
+                    return res
+                elif s == "return":
+                    res.append(("__RETURN__", cur_st))
+                    return res
+                elif s.startswith("$ "):
+                    m = re.match(r"^([a-zA-Z0-9_]+)\s*(\+=|-=|=)\s*(-?\d+)$", s[2:].strip())
+                    if m and m.group(1) in cur_st:
+                        var, op, val = m.group(1), m.group(2), int(m.group(3))
+                        if op == "=":
+                            cur_st[var] = val
+                        elif op == "+=":
+                            cur_st[var] += val
+                        elif op == "-=":
+                            cur_st[var] -= val
+                i += 1
+            res.append((None, cur_st))
+            return res
+
+        return [(fb if nxt is None else nxt, nst) for nxt, nst in run_seq(stmts, st)]
+
+    def explore(start_lbl, preset=None, pmode="all_true", max_steps=600000):
+        init_st = {r: 0 for r in regards}
+        for c in "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+            init_st["flg" + c] = 0
+        if preset:
+            init_st.update(preset)
+
+        def key_for(lbl, st):
+            lv = live_in.get(lbl, set())
+            return (lbl, tuple(st[r] for r in regards), tuple((v, st[v]) for v in sorted(lv) if v.startswith("flg")))
+
+        q = deque([(start_lbl, init_st)])
+        visited = {key_for(start_lbl, init_st)}
+        at_lbl = defaultdict(list)
+        steps = 0
+        while q and steps < max_steps:
+            steps += 1
+            lbl, st = q.popleft()
+            at_lbl[lbl].append(dict(st))
+            if lbl in ("__RETURN__", "__END__") or lbl not in asts:
+                continue
+            for nxt, nst in step_stmts(asts[lbl], st, pmode, next_map.get(lbl) or "__END__"):
+                k = key_for(nxt, nst)
+                if k not in visited:
+                    visited.add(k)
+                    q.append((nxt, nst))
+        return at_lbl
+
+    errs = []
+    at_true = explore("f20", None, "all_true")
+    at_first = explore("f20", None, "first_play")
+
+    # Check zero negatives from New Game (f20) & all 9 endings reachable
+    for lbl, sts in at_true.items():
+        for r in regards:
+            if min(s[r] for s in sts) < 0:
+                errs.append(f"Negative {r} reachable from f20 at {lbl}")
+                break
+
+    all_9_end_flbls = ("f52a", "f53a", "f308", "f310", "f384", "f385", "f412", "f413", "f429")
+    for ef in all_9_end_flbls:
+        if not at_true.get(ef):
+            errs.append(f"Canonical ending label {ef} unreachable from f20")
+
+    # Verify HEROINE_AFFECTION_SPEC in screens.rpy matches exact f20 maximums
+    true_max = {r: max(s[r] for sts in at_true.values() for s in sts) for r in regards}
+    scr_txt = read_text(os.path.join(game_dir, "ui", "screens.rpy"))
+    m_spec = re.search(r"HEROINE_AFFECTION_SPEC\s*=\s*\{(.*?)\}", scr_txt, re.S)
+    if not m_spec:
+        errs.append("Missing HEROINE_AFFECTION_SPEC in ui/screens.rpy")
+    else:
+        spec = eval("{" + m_spec.group(1) + "}", {"__builtins__": {}})
+        for r in regards:
+            ui_max = spec.get(r, (None,))[0]
+            if ui_max != true_max[r]:
+                errs.append(f"screens.rpy HEROINE_AFFECTION_SPEC[{r}] max={ui_max} != script max={true_max[r]}")
+
+    # Verify all Flowchart continue node presets
+    fc_txt = read_text(os.path.join(game_dir, "ui", "flowchart.rpy"))
+    m_fc = re.search(r"FLOWCHART_NODES\s*=\s*\[(.*?)\n    \]", fc_txt, re.S)
+    fc_nodes = eval("[" + m_fc.group(1) + "\n]", {"__builtins__": {}})
+    cont_nodes = [n for n in fc_nodes if n.get("mode") == "continue"]
+
+    route_expected = {
+        "com_05": ("f52a", "f53a", "f384", "f385"),
+        "com_06": ("f52a", "f53a", "f308", "f310"),
+        "com_07": ("f52a", "f53a", "f308", "f310"),
+        "arc_09": ("f52a",), "arc_10": ("f53a",),
+        "ciel_06": ("f310",), "ciel_07": ("f308",),
+        "aki_08": ("f385",), "aki_09": ("f384",),
+        "his_06": ("f412",), "his_07": ("f413",),
+        "koh_06": ("f429",),
+    }
+
+    for n in cont_nodes:
+        nid, lbl, cat = n["id"], n["branch_label"], n["cat"]
+        preset = n.get("preset", {})
+        check_lbl = "f53a" if lbl == "f53" else lbl
+        pool = at_true.get(check_lbl, []) + at_first.get(check_lbl, [])
+        if not any(all(s.get(k, 0) == v for k, v in preset.items()) for s in pool):
+            errs.append(f"Flowchart {nid} ({lbl}) preset {preset} is not jointly reachable from f20")
+            continue
+
+        fc_at = explore(lbl, preset, "all_true", max_steps=150000)
+        for slbl, sts in fc_at.items():
+            for r in regards:
+                if min(s[r] for s in sts) < 0:
+                    errs.append(f"Flowchart {nid} ({lbl}) can drive {r} negative at {slbl}")
+                    break
+
+        exp = route_expected.get(nid)
+        if not exp:
+            if cat == "arc":
+                exp = ("f52a", "f53a")
+            elif cat == "ciel":
+                exp = ("f308", "f310")
+            elif cat == "akiha":
+                exp = ("f384", "f385")
+            elif cat == "hisui":
+                exp = ("f412", "f413")
+            elif cat == "kohaku":
+                exp = ("f429",)
+        if exp:
+            for e_lbl in exp:
+                if not fc_at.get(e_lbl):
+                    errs.append(f"Flowchart {nid} ({lbl}) preset blocks expected ending {e_lbl}")
+        if nid in ("his_01", "his_02", "his_03") and not fc_at.get("f410"):
+            errs.append(f"Flowchart {nid} ({lbl}) preset bypasses Hisui Bad End f410")
+
+    return true_max, len(cont_nodes), errs
 
 
 def run_compliance_audit():
@@ -73,6 +356,8 @@ def run_compliance_audit():
         bl = blob.lower()
         if not ("open font license" in bl or "opensource.org/licenses/ipa" in bl or "ipa font license" in bl):
             issues.append(f"Non-open-source font in game/fonts/: {fn}")
+
+    issues.extend(check_version_sync())
 
     if issues:
         print(f"[COMPLIANCE FAILED] {len(issues)} issue(s):")
@@ -313,6 +598,14 @@ def main():
     else:
         failures.append(f"Ren'Py SDK executable not found: {RENPY_EXE}")
 
+    # 8. State-space reachability, affection bounds, UI caps & version sync
+    ver_issues = check_version_sync()
+    true_max, cont_cnt, ss_errs = verify_state_space_and_affection(GAME)
+    max_summary = ", ".join(f"{k.split('_')[0]}={v}" for k, v in true_max.items())
+    print(f"[8] State-space & versions: {cont_cnt} flowchart presets, caps({max_summary}), issues={len(ver_issues) + len(ss_errs)}")
+    failures.extend(ver_issues)
+    failures.extend(ss_errs)
+
     print("\n============================================================")
     if failures:
         print(f"VERIFICATION FAILED ({len(failures)} issues):")
@@ -320,7 +613,7 @@ def main():
             print("  [FAIL]", f)
         sys.exit(1)
     else:
-        print("ALL 7 VERIFICATION CHECKS PASSED WITH ZERO ERRORS!")
+        print("ALL 8 VERIFICATION CHECKS PASSED WITH ZERO ERRORS!")
         sys.exit(0)
 
 

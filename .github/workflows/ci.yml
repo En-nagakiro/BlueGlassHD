@@ -1,0 +1,32 @@
+name: Open-Source Compliance & Integrity CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  audit:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Minimal Audit Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pillow numpy
+
+      - name: Run Compliance & Version Sync Audit
+        run: python scripts/verify_project.py --compliance-audit
+
+      - name: Compile-Check Python Scripts
+        run: python -m py_compile scripts/byoa_import.py scripts/byoa_gui.py scripts/transpile_tsukihime.py scripts/build_ui_theme.py scripts/build_importer_exe.py scripts/build_release_package.py scripts/verify_project.py

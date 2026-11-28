@@ -38,10 +38,10 @@
 
 ## 玩家使用方式（推荐）
 
-从 [Releases](https://github.com/En-nagakiro/BlueGlassHD/releases) 下载 `BlueGlassHD-2.0.0-win-BYOA.zip`（提供 `.sha256` 校验文件）并解压，根目录结构如下：
+从 [Releases 最新版](https://github.com/En-nagakiro/BlueGlassHD/releases/latest) 下载 `BlueGlassHD-2.0.2-win-BYOA.zip`（提供 `.sha256` 校验文件）并解压，根目录结构如下：
 
 ```text
-BlueGlassHD-2.0.0-win/
+BlueGlassHD-2.0.2-win/
 ├── BlueGlassHD.exe          # 游戏主程序
 ├── BYOA_Importer.exe        # 图形资源导入工具（中/英双语）
 ├── game/                    # 开源引擎与 OFL/IPA 字库

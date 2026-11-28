@@ -38,10 +38,10 @@ All screenshots below are captured directly from the un-imported open-source eng
 
 ## Player Quick Start (Recommended)
 
-Download and extract `BlueGlassHD-2.0.0-win-BYOA.zip` (with `.sha256` checksum) from [Releases](https://github.com/En-nagakiro/BlueGlassHD/releases):
+Download and extract `BlueGlassHD-2.0.2-win-BYOA.zip` (with `.sha256` checksum) from [Latest Release](https://github.com/En-nagakiro/BlueGlassHD/releases/latest):
 
 ```text
-BlueGlassHD-2.0.0-win/
+BlueGlassHD-2.0.2-win/
 ├── BlueGlassHD.exe          # Game executable
 ├── BYOA_Importer.exe        # Bilingual GUI asset importer
 ├── game/                    # Open-source engine & OFL/IPA fonts
